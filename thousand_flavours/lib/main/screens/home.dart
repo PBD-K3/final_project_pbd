@@ -40,7 +40,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
               return const Column(
                 children: [
                   Text(
-                    'There is are no restaurants.',
+                    'There are no restaurants.',
                     style: TextStyle(fontSize: 20, color: Color(0xff59A5D8)),
                   ),
                   SizedBox(height: 8),
