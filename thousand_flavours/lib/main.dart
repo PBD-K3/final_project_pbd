@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:thousand_flavours/main/screens/login.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
