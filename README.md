@@ -19,7 +19,6 @@ A Thousand Flavours is a platform designed for exploring restaurants in Pulau Se
 - Home (```show_main```)
 In the main page users can explore featured restaurants in the gallery, check out restaurant categories to get an overview of what is available. The main page also displays images of restaurants and the restaurant of the month and possibly advertisements.
 
-
 **Navigation Bar**
 - Navbar (```navbar```)
 The navigation bar will display the following: the title of the website A Thousand Flavors and text that shows Welcome, {name} in which the user name changes depending on the name of the logged in user. The welcome text does not show if the user is not logged in. In addition, there are buttons for the interactive features, Explore, Wishlist and Favorites.
@@ -84,4 +83,13 @@ Registered users have access to personalized features, allowing them to save the
 **Non Users**
 Non registered users, or guest users, have limited access. They can look up restaurants by name and view general information, but personalization options are unavailable. 
 
+
+
 ## **Integration with the Web Service**
+The Django project of A Thousand Flavors is integrated with the Flutter application. 
+
+1. Key Features
+
+2. Frontend
+
+3. Backend
