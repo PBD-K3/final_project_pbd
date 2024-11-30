@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thousand_flavours/main/screens/home.dart';
+import 'package:thousand_flavours/main/screens/login.dart';
 
 class CoverPage extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class _CoverPageState extends State<CoverPage> {
   // Define a controller for the PageView
   final PageController _pageController = PageController(initialPage: 0);
 
-  // Define the content for the onboarding pages
+  // Define the content for the onboarding pagesr
   final List<Map<String, dynamic>> pages = [
     {
       'description': "In the middle of a forgotten corner of Nusantara...",
@@ -137,7 +138,7 @@ class _CoverPageState extends State<CoverPage> {
                             // Navigate to HomePage on Finish
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => HomePage()),
+                              MaterialPageRoute(builder: (context) => LoginPage()),
                             );
                           } else {
                             // Navigate to next page
