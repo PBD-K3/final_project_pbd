@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:thousand_flavours/main/screens/home.dart';
-import 'package:thousand_flavours/main/screens/login.dart';
+import 'package:thousand_flavours/authentication/screens/login.dart';
 
 class CoverPage extends StatefulWidget {
+  const CoverPage({super.key});
+
   @override
   _CoverPageState createState() => _CoverPageState();
 }
@@ -83,7 +85,7 @@ class _CoverPageState extends State<CoverPage> {
                                       page['description'],
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
-                                        fontSize: 16,
+                                        fontSize: 25,
                                         color: page['textColor'],
                                         fontFamily: 'Italiana',
                                       ),
@@ -150,7 +152,8 @@ class _CoverPageState extends State<CoverPage> {
                           }
                         },
                         child: Text(
-                          _currentPage == pages.length - 1 ? "Login" : "Next",
+                          _currentPage == pages.length - 1 ? 
+                          "Skip" : "Next",
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
