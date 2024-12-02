@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thousand_flavours/main/screens/home.dart';
+import 'package:thousand_flavours/favorites/favorites.dart';
 
 class BottomNavWidget extends StatelessWidget {
   const BottomNavWidget({super.key});
@@ -40,10 +41,10 @@ class BottomNavWidget extends StatelessWidget {
               icon: Icons.favorite_outline,
               isSelected: false,
               onTap: () {
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => FavoritesPage()), // Replace with your FavoritesPage widget
-                // );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FavoritesPage()), // Specify the previous page
+                  );
               },
             ),
             _buildNavItem(
