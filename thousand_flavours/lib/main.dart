@@ -6,7 +6,7 @@ import 'package:thousand_flavours/main/screens/cover.dart';
 // import 'package:thousand_flavours/main/screens/testing.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
