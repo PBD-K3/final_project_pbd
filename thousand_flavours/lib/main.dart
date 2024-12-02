@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:thousand_flavours/main/screens/login.dart';
+// import 'package:thousand_flavours/main/screens/login.dart';
+import 'package:thousand_flavours/main/screens/cover.dart';
+// import 'package:thousand_flavours/main/screens/testing.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
         ),
-        home: const LoginPage(),
+        home: CoverPage()
       ),
     );
   }
