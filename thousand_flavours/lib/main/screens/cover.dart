@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:thousand_flavours/main/screens/home.dart';
+import 'package:provider/provider.dart';
 import 'package:thousand_flavours/authentication/screens/login.dart';
+import 'package:thousand_flavours/main/screens/home.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 class CoverPage extends StatefulWidget {
   const CoverPage({super.key});
@@ -16,7 +18,7 @@ class _CoverPageState extends State<CoverPage> {
   // Define a controller for the PageView
   final PageController _pageController = PageController(initialPage: 0);
 
-  // Define the content for the onboarding pagesr
+  // Define the content for the onboarding pages
   final List<Map<String, dynamic>> pages = [
     {
       'description': "In the middle of a forgotten corner of Nusantara...",
@@ -31,8 +33,25 @@ class _CoverPageState extends State<CoverPage> {
     },
   ];
 
+  void navigateBasedOnAuth(CookieRequest request) {
+    // Check if the user is authenticated and navigate accordingly
+    if (request.loggedIn) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final request = Provider.of<CookieRequest>(context);
+
     return Scaffold(
       body: Stack(
         children: [
@@ -46,7 +65,7 @@ class _CoverPageState extends State<CoverPage> {
           // Semi-transparent overlay for better readability
           Positioned.fill(
             child: Container(
-              color: Colors.transparent
+              color: Colors.transparent,
             ),
           ),
           // Main Onboarding Content
@@ -69,9 +88,11 @@ class _CoverPageState extends State<CoverPage> {
                       return Center(
                         child: page.containsKey('image')
                             ? Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0),
                                 child: Image.asset(
-                                  page['image'], // Display the image for the third page
+                                  page[
+                                      'image'], // Display the image for the third page
                                   fit: BoxFit.contain,
                                 ),
                               )
@@ -80,7 +101,8 @@ class _CoverPageState extends State<CoverPage> {
                                 children: [
                                   // Page Description
                                   Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24.0),
                                     child: Text(
                                       page['description'],
                                       textAlign: TextAlign.center,
@@ -116,18 +138,14 @@ class _CoverPageState extends State<CoverPage> {
                 ),
                 // Bottom Buttons
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24.0, vertical: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       // Skip Button
                       TextButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(builder: (context) => HomePage()),
-                          );
-                        },
+                        onPressed: () => navigateBasedOnAuth(request),
                         child: const Text(
                           "Skip",
                           style: TextStyle(color: Colors.white),
@@ -137,11 +155,8 @@ class _CoverPageState extends State<CoverPage> {
                       TextButton(
                         onPressed: () {
                           if (_currentPage == pages.length - 1) {
-                            // Navigate to HomePage on Finish
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
-                            );
+                            // Navigate based on auth status on Finish
+                            navigateBasedOnAuth(request);
                           } else {
                             // Navigate to next page
                             _pageController.animateToPage(
@@ -152,8 +167,7 @@ class _CoverPageState extends State<CoverPage> {
                           }
                         },
                         child: Text(
-                          _currentPage == pages.length - 1 ? 
-                          "Skip" : "Next",
+                          _currentPage == pages.length - 1 ? "Finish" : "Next",
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
