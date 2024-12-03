@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildTopSection() {
-    return Container(
+    return SizedBox(
       height: 270, // Adjust as needed
       child: Stack(
         children: [

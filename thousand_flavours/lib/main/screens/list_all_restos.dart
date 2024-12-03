@@ -33,7 +33,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Section
-            Container(
+            SizedBox(
               height: 250,
               width: double.infinity,
               child: Stack(
