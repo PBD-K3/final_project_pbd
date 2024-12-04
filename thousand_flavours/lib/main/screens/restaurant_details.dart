@@ -46,6 +46,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
   @override
   void initState() {
     super.initState();
+    isBookmarked = widget.isBookmarked;
     final request = context.read<CookieRequest>();
     _reviewService = ReviewService(request);
     _fetchReviews();
@@ -89,12 +90,6 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
         const SnackBar(content: Text('Failed to submit review')),
       );
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    isBookmarked = widget.isBookmarked; // Initialize with passed value
   }
 
   @override
