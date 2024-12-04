@@ -7,6 +7,8 @@ class RestaurantCard extends StatefulWidget {
   final String category;
   final String imageUrl;
   final double rating;
+  final bool isBookmarked; 
+  final Function(bool) onBookmark;
 
   const RestaurantCard({
     super.key,
@@ -15,6 +17,8 @@ class RestaurantCard extends StatefulWidget {
     required this.category,
     required this.imageUrl,
     required this.rating,
+    required this.isBookmarked,
+    required this.onBookmark,
   });
 
   @override
@@ -23,6 +27,13 @@ class RestaurantCard extends StatefulWidget {
 
 class _RestaurantCardState extends State<RestaurantCard> {
   bool isFavorite = false;
+  bool isBookmarked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isBookmarked = widget.isBookmarked; // Initialize with the passed value
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +50,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
               rating: widget.rating,
               island: widget.subtitle,
               contact: '123-456-7890', // Replace with actual contact data
+              isBookmarked: false,
+              onBookmark: (isBookmarked) {}
             ),
           ),
         );
@@ -139,6 +152,8 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       fontSize: 10,
                     ),
                   ),
+                  Row(
+                    children: [
                   GestureDetector(
                     onTap: () {
                       setState(() {
@@ -150,6 +165,35 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       color: isFavorite ? Colors.red : Colors.white70,
                       size: 20,
                     ),
+                  ),
+                  const SizedBox(width: 10), // Space between icons
+                  // Bookmark Icon
+                  GestureDetector(
+                    onTap: () {
+                      widget.onBookmark(!widget.isBookmarked);
+                      
+                      setState(() {
+                        isBookmarked = !isBookmarked;
+                      });
+
+                      widget.onBookmark(isBookmarked);
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            '${widget.title} has been ${isBookmarked ? 'added to' : 'removed from'} the wishlist!',
+                          ),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    child: Icon(
+                      isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                      color: isBookmarked ? Colors.blue : Colors.white70,
+                      size: 20,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

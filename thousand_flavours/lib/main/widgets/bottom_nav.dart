@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thousand_flavours/main/screens/home.dart';
+import 'package:thousand_flavours/wishlist/screens/wishlist.dart';
 
 class BottomNavWidget extends StatelessWidget {
   const BottomNavWidget({super.key});
@@ -60,10 +61,10 @@ class BottomNavWidget extends StatelessWidget {
               icon: Icons.bookmark_border,
               isSelected: false,
               onTap: () {
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => BookmarksPage()), // Replace with your BookmarksPage widget
-                // );
+                 Navigator.push(
+                 context,
+                 MaterialPageRoute(builder: (context) => WishlistPage()), // Replace with your BookmarksPage widget
+                 );
               },
             ),
             _buildNavItem(

@@ -103,6 +103,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
                               ? 'assets/default_food_image.png'
                               : restaurant.fields.image,
                           rating: 4.5,
+                          isBookmarked: false,
+                          onBookmark: (isBookmarked) {
+                          }
                         );
                       },
                     );
