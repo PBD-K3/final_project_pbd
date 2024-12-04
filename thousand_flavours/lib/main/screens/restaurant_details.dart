@@ -9,6 +9,8 @@ class RestaurantDetailsPage extends StatefulWidget {
   final double rating;
   final String island;
   final String contact;
+  final bool isBookmarked;
+  final Function(bool) onBookmark;
 
   const RestaurantDetailsPage({
     super.key,
@@ -19,6 +21,8 @@ class RestaurantDetailsPage extends StatefulWidget {
     required this.rating,
     required this.island,
     required this.contact,
+    required this.isBookmarked,
+    required this.onBookmark,
   });
 
   @override
@@ -28,6 +32,12 @@ class RestaurantDetailsPage extends StatefulWidget {
 class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
   bool isFavorite = false;
   bool isBookmarked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isBookmarked = widget.isBookmarked; // Initialize with passed value
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,12 +96,20 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                       IconButton(
                         icon: Icon(
                           isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                          color: Colors.white,
+                          color: isBookmarked ? Colors.blue : Colors.white,
                         ),
                         onPressed: () {
                           setState(() {
                             isBookmarked = !isBookmarked;
                           });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                '${widget.title} has been ${isBookmarked ? 'added to' : 'removed from'} the wishlist!',
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         },
                       ),
                     ],
@@ -177,4 +195,5 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
       bottomNavigationBar: const BottomNavWidget(),
     );
   }
+  
 }

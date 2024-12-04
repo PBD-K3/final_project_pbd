@@ -192,6 +192,9 @@ class _HomePageState extends State<HomePage> {
                       ? 'assets/default_food_image.png'
                       : restaurant.fields.image,
                   rating: 4.5,
+                  isBookmarked: false,
+                  onBookmark: (isBookmarked){
+                  }
                 );
               }).toList(),
             ),
