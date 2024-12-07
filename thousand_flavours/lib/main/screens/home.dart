@@ -213,6 +213,7 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: snapshot.data!.map((restaurant) {
                 return RestaurantCard(
+                    pk: restaurant.pk,
                     title: restaurant.fields.name,
                     subtitle: restaurant.fields.island,
                     category: restaurant.fields.cuisine,

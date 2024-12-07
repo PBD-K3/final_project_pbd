@@ -108,6 +108,7 @@ class _WishlistPageState extends State<WishlistPage> {
                     itemBuilder: (context, index) {
                       final restaurant = wishlist[index];
                       return RestaurantCard(
+                        pk: restaurant['pk'],
                         title: restaurant['title'],
                         subtitle: restaurant['subtitle'],
                         category: restaurant['category'],

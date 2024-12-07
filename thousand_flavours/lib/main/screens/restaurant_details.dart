@@ -8,6 +8,7 @@ import 'package:thousand_flavours/reviews/services/review_service.dart';
 import 'package:thousand_flavours/reviews/models/review.dart';
 
 class RestaurantDetailsPage extends StatefulWidget {
+  final String pk;
   final String title;
   final String subtitle;
   final String category;
@@ -20,6 +21,7 @@ class RestaurantDetailsPage extends StatefulWidget {
 
   const RestaurantDetailsPage({
     super.key,
+    required this.pk,
     required this.title,
     required this.subtitle,
     required this.category,
@@ -55,7 +57,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
   // Fetch reviews from the server
   Future<void> _fetchReviews() async {
     try {
-      final reviews = await _reviewService.fetchReviews(widget.subtitle); // subtitle as restaurant ID
+      final reviews = await _reviewService.fetchReviews(widget.pk); // subtitle as restaurant ID
       setState(() {
         _reviews = reviews;
       });
@@ -71,25 +73,26 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     final newReview = Review(
       id: 0,
       user: 'Current User', // Replace with actual username from session
-      restaurant: widget.subtitle,
+      restaurant: widget.pk,
       rating: rating,
       description: description,
       createdAt: DateTime.now(),
     );
 
-    try {
-      final success = await _reviewService.submitReview(widget.subtitle, newReview);
+    // try {
+      final success = await _reviewService.submitReview(widget.pk, newReview);
       if (success) {
         _fetchReviews(); // Reload reviews after successful submission
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Review submitted successfully')),
         );
       }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to submit review')),
-      );
-    }
+    // } catch (e) {
+    //   print(e);
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text('Failed to submit review')),
+    //   );
+    // }
   }
 
   @override

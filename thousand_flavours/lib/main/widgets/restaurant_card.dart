@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:thousand_flavours/main/screens/restaurant_details.dart';
 
 class RestaurantCard extends StatefulWidget {
+  final String pk;
   final String title;
   final String subtitle;
   final String category;
@@ -12,6 +13,7 @@ class RestaurantCard extends StatefulWidget {
 
   const RestaurantCard({
     super.key,
+    required this.pk,
     required this.title,
     required this.subtitle,
     required this.category,
@@ -43,6 +45,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
           context,
           MaterialPageRoute(
             builder: (context) => RestaurantDetailsPage(
+              pk: widget.pk,
               title: widget.title,
               subtitle: widget.subtitle,
               category: widget.category,

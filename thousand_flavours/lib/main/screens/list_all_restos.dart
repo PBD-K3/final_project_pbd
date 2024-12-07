@@ -96,6 +96,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                       itemBuilder: (context, index) {
                         final restaurant = snapshot.data![index];
                         return RestaurantCard(
+                          pk: restaurant.pk,
                           title: restaurant.fields.name,
                           subtitle: restaurant.fields.island,
                           category: restaurant.fields.cuisine,
