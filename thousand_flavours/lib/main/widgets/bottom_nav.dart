@@ -47,16 +47,34 @@ class BottomNavWidget extends StatelessWidget {
                 // );
               },
             ),
-            _buildNavItem(
-              icon: Icons.search,
-              isSelected: true,
-              onTap: () {
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => SearchPage()), // Replace with your SearchPage widget
-                // );
-              },
-            ),
+_buildNavItem({
+  required IconData icon,
+  required bool isSelected,
+  required VoidCallback onTap,
+}) {
+  return GestureDetector(
+    onTap: onTap,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: isSelected
+              ? const Color.fromARGB(255, 184, 126, 32)
+              : Colors.grey,
+        ),
+        const SizedBox(height: 4),
+        if (isSelected)
+          Container(
+            height: 2,
+            width: 20,
+            color: const Color.fromARGB(255, 184, 126, 32),
+          ),
+      ],
+    ),
+  );
+}
+
             _buildNavItem(
               icon: Icons.bookmark_border,
               isSelected: false,
