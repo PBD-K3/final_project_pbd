@@ -7,6 +7,7 @@ import 'package:thousand_flavours/main/widgets/bottom_nav.dart';
 import 'package:thousand_flavours/main/widgets/category_card.dart';
 import 'package:thousand_flavours/main/widgets/restaurant_card.dart';
 import 'package:thousand_flavours/main/widgets/restaurant_otm.dart';
+import 'package:thousand_flavours/search/widgets/restaurant_search.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,7 +17,21 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<List<Restaurants>> fetchFirstThreeRestaurants(CookieRequest request) async {
+  final TextEditingController _searchController = TextEditingController();
+  void _navigateToSearchScreen(BuildContext context, String query) {
+    if (query.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              RestaurantSearchPage(query: query), // Transmet la requête
+        ),
+      );
+    }
+  }
+
+  Future<List<Restaurants>> fetchFirstThreeRestaurants(
+      CookieRequest request) async {
     final response = await request.get('http://localhost:8000/json/');
     List<Restaurants> listRestaurants = [];
     for (var d in response.take(4)) {
@@ -68,7 +83,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildTopSection() {
-    return Container(
+    return SizedBox(
       height: 270, // Adjust as needed
       child: Stack(
         children: [
@@ -117,11 +132,24 @@ class _HomePageState extends State<HomePage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: TextField(
+                        controller:
+                            _searchController, // Connecte le contrôleur ici
                         decoration: const InputDecoration(
                           hintText: "What are you craving?",
                           border: InputBorder.none,
                         ),
+                        onSubmitted: (value) {
+                          _navigateToSearchScreen(
+                              context, value); // Navigue lors de la soumission
+                        },
                       ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: () {
+                        _navigateToSearchScreen(context,
+                            _searchController.text); // Navigue lors du clic
+                      },
                     ),
                   ],
                 ),
@@ -185,14 +213,16 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: snapshot.data!.map((restaurant) {
                 return RestaurantCard(
-                  title: restaurant.fields.name,
-                  subtitle: restaurant.fields.island,
-                  category: restaurant.fields.cuisine,
-                  imageUrl: restaurant.fields.image.isEmpty
-                      ? 'assets/default_food_image.png'
-                      : restaurant.fields.image,
-                  rating: 4.5,
-                );
+                    pk: restaurant.pk,
+                    title: restaurant.fields.name,
+                    subtitle: restaurant.fields.island,
+                    category: restaurant.fields.cuisine,
+                    imageUrl: restaurant.fields.image.isEmpty
+                        ? 'assets/default_food_image.png'
+                        : restaurant.fields.image,
+                    rating: 4.5,
+                    isBookmarked: false,
+                    onBookmark: (isBookmarked) {});
               }).toList(),
             ),
           );
