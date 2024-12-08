@@ -9,6 +9,9 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class FavoritesPageState extends State<FavoritesPage> {
+  // Sample favorites list, replace with your actual data source
+  List<Map<String, dynamic>> favoriteRestaurants = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +65,40 @@ class FavoritesPageState extends State<FavoritesPage> {
                 ],
               ),
             ),
-            // Add more content here as needed
+
+            // Conditional rendering for favorites
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: favoriteRestaurants.isEmpty
+                  ? Center(
+                      child: Text(
+                        'You have no favorite restaurants yet!',
+                        style: const TextStyle(
+                          color: Colors.white70,
+                          fontSize: 16,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    )
+                  : Column(
+                      children: favoriteRestaurants.map((restaurant) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(restaurant['imageUrl']),
+                          ),
+                          title: Text(
+                            restaurant['name'],
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          subtitle: Text(
+                            restaurant['location'],
+                            style: const TextStyle(color: Colors.white70),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+            ),
           ],
         ),
       ),

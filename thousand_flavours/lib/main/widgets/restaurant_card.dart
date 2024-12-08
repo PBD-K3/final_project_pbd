@@ -162,6 +162,18 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       setState(() {
                         isFavorite = !isFavorite;
                       });
+
+                      // Show SnackBar with appropriate message
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            isFavorite
+                                ? "Restaurant has been added to favorites!"
+                                : "Restaurant has been removed from favorites!",
+                          ),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
                     },
                     child: Icon(
                       isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -170,7 +182,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     ),
                   ),
                   const SizedBox(width: 10), // Space between icons
-                  // Bookmark Icon
                   GestureDetector(
                     onTap: () {
                       widget.onBookmark(!widget.isBookmarked);

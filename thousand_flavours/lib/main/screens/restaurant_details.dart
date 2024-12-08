@@ -147,6 +147,16 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                           setState(() {
                             isFavorite = !isFavorite;
                           });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isFavorite
+                                    ? "Restaurant has been added to favorites!"
+                                    : "Restaurant has been removed from favorites!",
+                              ),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         },
                       ),
                       IconButton(
