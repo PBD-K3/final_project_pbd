@@ -2,9 +2,63 @@ import 'package:flutter/material.dart';
 import 'package:thousand_flavours/main/screens/home.dart';
 import 'package:thousand_flavours/wishlist/screens/wishlist.dart';
 import 'package:thousand_flavours/favorites/screens/favorites.dart';
+import 'package:thousand_flavours/search/widgets/restaurant_search.dart';
 
 class BottomNavWidget extends StatelessWidget {
   const BottomNavWidget({super.key});
+
+  void _showSearchOverlay(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        TextEditingController searchController = TextEditingController();
+
+        return AlertDialog(
+          contentPadding: EdgeInsets.zero,
+          content: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(24.0),
+                  ),
+                  child: TextField(
+                    controller: searchController,
+                    decoration: InputDecoration(
+                      hintText: "What are you craving?",
+                      border: InputBorder.none,
+                      suffixIcon: IconButton(
+                        icon: const Icon(Icons.search),
+                        onPressed: () {
+                          Navigator.pop(context); // Close the dialog
+                          String query = searchController.text;
+                          if (query.isNotEmpty) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    RestaurantSearchPage(query: query),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +88,9 @@ class BottomNavWidget extends StatelessWidget {
               onTap: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => HomePage()), // Replace with your HomePage widget
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomePage()), // Replace with your HomePage widget
                 );
               },
             ),
@@ -44,46 +100,29 @@ class BottomNavWidget extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FavoritesPage()), // Replace with your FavoritesPage widget
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          FavoritesPage()), // Replace with your FavoritesPage widget
                 );
               },
             ),
-// _buildNavItem({
-//   required IconData icon,
-//   required bool isSelected,
-//   required VoidCallback onTap,
-// }) {
-//   return GestureDetector(
-//     onTap: onTap,
-//     child: Column(
-//       mainAxisSize: MainAxisSize.min,
-//       children: [
-//         Icon(
-//           icon,
-//           color: isSelected
-//               ? const Color.fromARGB(255, 184, 126, 32)
-//               : Colors.grey,
-//         ),
-//         const SizedBox(height: 4),
-//         if (isSelected)
-//           Container(
-//             height: 2,
-//             width: 20,
-//             color: const Color.fromARGB(255, 184, 126, 32),
-//           ),
-//       ],
-//     ),
-//   );
-// }
-
+            _buildNavItem(
+              icon: Icons.search,
+              isSelected: false,
+              onTap: () {
+                _showSearchOverlay(context); // Show search overlay
+              },
+            ),
             _buildNavItem(
               icon: Icons.bookmark_border,
               isSelected: false,
               onTap: () {
-                 Navigator.push(
-                 context,
-                 MaterialPageRoute(builder: (context) => WishlistPage()), // Replace with your BookmarksPage widget
-                 );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          WishlistPage()), // Replace with your BookmarksPage widget
+                );
               },
             ),
             _buildNavItem(
@@ -110,10 +149,12 @@ class BottomNavWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(8), // Adds padding for circular background
+        padding:
+            const EdgeInsets.all(8), // Adds padding for circular background
         decoration: isSelected
             ? BoxDecoration(
-                color: const Color.fromARGB(255, 184, 126, 32), // Highlight color for selected icon
+                color: const Color.fromARGB(
+                    255, 184, 126, 32), // Highlight color for selected icon
                 shape: BoxShape.circle,
               )
             : null,
