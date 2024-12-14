@@ -33,7 +33,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header Section
-            Container(
+            SizedBox(
               height: 250,
               width: double.infinity,
               child: Stack(
@@ -96,6 +96,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
                       itemBuilder: (context, index) {
                         final restaurant = snapshot.data![index];
                         return RestaurantCard(
+                          pk: restaurant.pk,
                           title: restaurant.fields.name,
                           subtitle: restaurant.fields.island,
                           category: restaurant.fields.cuisine,
@@ -103,6 +104,9 @@ class _RestaurantPageState extends State<RestaurantPage> {
                               ? 'assets/default_food_image.png'
                               : restaurant.fields.image,
                           rating: 4.5,
+                          isBookmarked: false,
+                          onBookmark: (isBookmarked) {
+                          }
                         );
                       },
                     );
