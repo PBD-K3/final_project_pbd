@@ -17,9 +17,11 @@ class LoginApp extends StatelessWidget {
       title: 'Login',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSwatch(
-          primarySwatch: Colors.deepPurple,
-        ).copyWith(secondary: Colors.deepPurple[400]),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor:
+              const Color(0xFFB87E20), // Hexadecimal color as Color object
+          secondary: const Color(0xFFB87E20),
+        ),
       ),
       home: const LoginPage(),
     );
@@ -79,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontSize: 28.0,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Italiana',
-                            color: Color.fromARGB(255, 236, 225, 180),
+                            color: Color(0xFFB87E20),
                           ),
                         ),
                         const SizedBox(height: 30.0),
@@ -88,11 +90,35 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: InputDecoration(
                             labelText: 'Username',
                             hintText: 'Enter your username',
+                            labelStyle: const TextStyle(
+                              color: Color(0xFFB87E20), // Apply #B87E20 to the label
+                            ),
+                            hintStyle: const TextStyle(
+                              color: Color(0xFFB87E20), // Apply #B87E20 to the hint text
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16.0),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFB87E20), // Border color for OutlineInputBorder
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFB87E20), // Enabled border color
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFB87E20), // Focused border color
+                                width: 2.0, // Optional, make the focused border thicker
+                              ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 12.0),
+                              horizontal: 16.0,
+                              vertical: 12.0,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16.0),
@@ -101,13 +127,36 @@ class _LoginPageState extends State<LoginPage> {
                           decoration: InputDecoration(
                             labelText: 'Password',
                             hintText: 'Enter your password',
+                            labelStyle: const TextStyle(
+                              color: Color(0xFFB87E20), // Apply #B87E20 to the label
+                            ),
+                            hintStyle: const TextStyle(
+                              color: Color(0xFFB87E20), // Apply #B87E20 to the hint text
+                            ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16.0),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFB87E20), // Border color for OutlineInputBorder
+                              ),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFB87E20), // Enabled border color
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(16.0),
+                              borderSide: const BorderSide(
+                                color: Color(0xFFB87E20), // Focused border color
+                                width: 2.0, // Optional, make the focused border thicker
+                              ),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16.0, vertical: 12.0),
+                              horizontal: 16.0,
+                              vertical: 12.0,
+                            ),
                           ),
-                          obscureText: true,
                         ),
                         const SizedBox(height: 24.0),
                         ElevatedButton(
@@ -159,7 +208,7 @@ class _LoginPageState extends State<LoginPage> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple[400],
+                            backgroundColor: const Color(0xFFB87E20),
                             padding: const EdgeInsets.symmetric(
                                 vertical: 16.0, horizontal: 24.0),
                             shape: RoundedRectangleBorder(
@@ -167,9 +216,14 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           child: const Text(
-                            'Login',
-                            style: TextStyle(color: Colors.white, fontSize: 18),
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Italiana',
+                            color: Colors.white,
                           ),
+                        ),
                         ),
                         const SizedBox(height: 24.0),
                         GestureDetector(
@@ -181,13 +235,14 @@ class _LoginPageState extends State<LoginPage> {
                             );
                           },
                           child: const Text(
-                            'Don\'t have an account? Register',
-                            style: TextStyle(
-                              color: Colors.deepPurple,
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.w600,
-                            ),
+                          'Don\'t have an account? Register.',
+                          style: TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Italiana',
+                            color: Color(0xFFB87E20),
                           ),
+                        ),
                         ),
                       ],
                     ),
