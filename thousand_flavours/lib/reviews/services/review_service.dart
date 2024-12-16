@@ -1,3 +1,4 @@
+// review_service.dart
 import 'dart:convert';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import '../models/review.dart';
@@ -9,29 +10,54 @@ class ReviewService {
 
   // Fetch reviews for a restaurant
   Future<List<Review>> fetchReviews(String restaurantId) async {
-    final response = await request.get(
-      'http://localhost:8000/reviews/api/get-reviews/$restaurantId/', // Ensure UUID is passed
-    );
+    try {
+      final response = await request.get(
+        'http://localhost:8000/reviews/api/get-reviews/$restaurantId/',
+      );
 
-    print("Fetch Reviews Response: $response");
+      print("Fetch Reviews Response: ${response}");
 
-    if (response is List) {
-      return response.map<Review>((json) => Review.fromJson(json)).toList();
-    } else {
-      print("Error fetching reviews: $response");
+      if (response is List) {
+        return response.map<Review>((json) => Review.fromJson(json)).toList();
+      } else {
+        print("Error fetching reviews: ${response}");
+        return [];
+      }
+    } catch (e) {
+      print("Error parsing response: $e");
       return [];
     }
   }
 
   // Submit a review for a restaurant
   Future<bool> submitReview(String restaurantId, Review review) async {
-    final response = await request.postJson(
-      'http://localhost:8000/reviews/api/submit-review/$restaurantId/', // Ensure UUID is passed
-      json.encode(review.toJson()),
-    );
+    try {
+      // Fetch CSRF token
+      final csrfResponse = await request.get(
+        'http://localhost:8000/reviews/api/csrf/',
+      );
+      print("CSRF Response: ${csrfResponse}");
 
-    print("Submit Review Response: $response");
+      // Extract CSRF token
+      final csrfToken = csrfResponse['csrfToken'];
+      print("CSRF Token: $csrfToken");
 
-    return response['id'] != null; // Check if review was successfully created
+      // Submit the review with CSRF token included
+      final response = await request.post(
+        'http://localhost:8000/reviews/api/submit-review/$restaurantId/',
+        {
+          'rating': review.rating.toString(),
+          'description': review.description,
+          'csrfmiddlewaretoken': csrfToken,
+        },
+      );
+
+      print("Submit Review Response: ${response}");
+
+      return response['id'] != null; // Check if review was successfully created
+    } catch (e) {
+      print("Error submitting review: $e");
+      return false;
+    }
   }
 }
