@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:thousand_flavours/main/widgets/restaurant_card.dart';
 
 class RestaurantSearchPage extends StatefulWidget {
   final String query;
@@ -67,7 +68,6 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
       ),
       body: Column(
         children: [
-          // Search Bar
           Container(
             margin: const EdgeInsets.all(16.0),
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -107,8 +107,6 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
               ],
             ),
           ),
-
-          // Search Results
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -126,23 +124,37 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                               style: TextStyle(fontSize: 18),
                             ),
                           )
-                        : ListView.builder(
+                        : GridView.builder(
+                            padding: const EdgeInsets.all(16.0),
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              childAspectRatio: 2.5,
+                            ),
                             itemCount: _results.length,
                             itemBuilder: (context, index) {
                               final restaurant = _results[index];
-                              return ListTile(
-                                leading: Image.network(
-                                  restaurant['image'] ??
-                                      'assets/default_food_image.png',
-                                  width: 50,
-                                  height: 50,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) =>
-                                      const Icon(Icons.image),
+                              return SizedBox(
+                                height: 100,
+                                child: RestaurantCard(
+                                  pk: restaurant['id'].toString(),
+                                  title: restaurant['name'],
+                                  subtitle: restaurant['island'],
+                                  category: restaurant['cuisine'] ??
+                                      "Unknown Cuisine",
+                                  imageUrl: restaurant['image'] ??
+                                      'https://via.placeholder.com/150',
+                                  rating:
+                                      restaurant['rating']?.toDouble() ?? 0.0,
+                                  isBookmarked: false,
+                                  onBookmark: (isBookmarked) {
+                                    debugPrint(
+                                      '${restaurant['name']} has been ${isBookmarked ? 'bookmarked' : 'unbookmarked'}',
+                                    );
+                                  },
                                 ),
-                                title: Text(restaurant['name']),
-                                subtitle: Text(
-                                    '${restaurant['island']} - ${restaurant['cuisine']}'),
                               );
                             },
                           ),

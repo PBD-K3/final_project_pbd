@@ -18,16 +18,32 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
+
   void _navigateToSearchScreen(BuildContext context, String query) {
     if (query.isNotEmpty) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              RestaurantSearchPage(query: query), // Transmet la requête
+          builder: (context) => RestaurantSearchPage(query: query),
         ),
       );
     }
+  }
+
+  void _showError(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<List<Restaurants>> fetchFirstThreeRestaurants(
@@ -71,7 +87,7 @@ class _HomePageState extends State<HomePage> {
                   // Categories Section
                   _buildSectionTitle("C A T E G O R I E S"),
                   const SizedBox(height: 10),
-                  _buildCategoriesGrid(),
+                  _buildCategoriesGrid(context),
                 ],
               ),
             ),
@@ -231,18 +247,57 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildCategoriesGrid() {
+  Widget _buildCategoriesGrid(BuildContext context) {
     return GridView.count(
       crossAxisCount: 3,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      children: const [
-        CategoryCard(title: 'Seafood', icon: Icons.restaurant),
-        CategoryCard(title: 'Coffee & Snacks', icon: Icons.local_cafe),
-        CategoryCard(title: 'Indonesian', icon: Icons.rice_bowl),
-        CategoryCard(title: 'International', icon: Icons.public),
-        CategoryCard(title: 'Local Dishes', icon: Icons.dining),
+      children: [
+        CategoryCard(
+          title: 'Seafood',
+          icon: Icons.restaurant,
+          onTap: () {
+            _navigateToSearchPage(context, 'Seafood');
+          },
+        ),
+        CategoryCard(
+          title: 'Coffee & Snacks',
+          icon: Icons.local_cafe,
+          onTap: () {
+            _navigateToSearchPage(context, 'Coffee & Snacks');
+          },
+        ),
+        CategoryCard(
+          title: 'Indonesian',
+          icon: Icons.rice_bowl,
+          onTap: () {
+            _navigateToSearchPage(context, 'Indonesian');
+          },
+        ),
+        CategoryCard(
+          title: 'International',
+          icon: Icons.public,
+          onTap: () {
+            _navigateToSearchPage(context, 'International');
+          },
+        ),
+        CategoryCard(
+          title: 'Local Dishes',
+          icon: Icons.dining,
+          onTap: () {
+            _navigateToSearchPage(context, 'Local Dishes');
+          },
+        ),
       ],
+    );
+  }
+
+  void _navigateToSearchPage(BuildContext context, String query) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RestaurantSearchPage(query: query),
+      ),
     );
   }
 }
