@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thousand_flavours/main/screens/home.dart';
+import 'package:thousand_flavours/profile_page/screens/profile_page.dart';
 import 'package:thousand_flavours/wishlist/screens/wishlist.dart';
 import 'package:thousand_flavours/favorites/screens/favorites.dart';
 import 'package:thousand_flavours/search/widgets/restaurant_search.dart';
@@ -129,10 +130,10 @@ class BottomNavWidget extends StatelessWidget {
               icon: Icons.person,
               isSelected: false,
               onTap: () {
-                // Navigator.pushReplacement(
-                //   context,
-                //   MaterialPageRoute(builder: (context) => ProfilePage()), // Replace with your ProfilePage widget
-                // );
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProfilePage()), // Replace with your ProfilePage widget
+                );
               },
             ),
           ],

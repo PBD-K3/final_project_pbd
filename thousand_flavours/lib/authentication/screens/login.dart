@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontFamily: 'Italiana',
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
-                            color: Color(0x00000000),
+                            color: Colors.black,
                           ),
                           decoration: InputDecoration(
                             labelText: 'Username',
@@ -141,7 +141,7 @@ class _LoginPageState extends State<LoginPage> {
                             fontFamily: 'Italiana',
                             fontSize: 16.0,
                             fontWeight: FontWeight.bold,
-                            color: Color(0x00000000),
+                            color: Colors.black,
                           ),
                           decoration: InputDecoration(
                             labelText: 'Password',
