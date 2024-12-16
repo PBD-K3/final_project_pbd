@@ -45,13 +45,11 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
         setState(() {
           _hasError = true;
         });
-        debugPrint('Error: ${response.body}');
       }
     } catch (e) {
       setState(() {
         _hasError = true;
       });
-      debugPrint('Exception: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -62,104 +60,103 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 21, 18, 13),
       appBar: AppBar(
         title: const Text('Search Results'),
         backgroundColor: const Color.fromARGB(255, 184, 126, 32),
       ),
-      body: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.all(16.0),
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.9),
-              borderRadius: BorderRadius.circular(24.0),
-            ),
-            child: Row(
-              children: [
-                const Icon(
-                  Icons.search,
-                  color: Color.fromARGB(255, 184, 126, 32),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    decoration: const InputDecoration(
-                      hintText: "What are you craving?",
-                      border: InputBorder.none,
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(24.0),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search,
+                      color: Color.fromARGB(255, 184, 126, 32)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      decoration: const InputDecoration(
+                        hintText: "What are you craving?",
+                        border: InputBorder.none,
+                      ),
+                      onSubmitted: (value) {
+                        if (value.isNotEmpty) {
+                          _searchRestaurants(value);
+                        }
+                      },
                     ),
-                    onSubmitted: (value) {
-                      if (value.isNotEmpty) {
-                        _searchRestaurants(value);
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      if (_searchController.text.isNotEmpty) {
+                        _searchRestaurants(_searchController.text);
                       }
                     },
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: () {
-                    if (_searchController.text.isNotEmpty) {
-                      _searchRestaurants(_searchController.text);
-                    }
-                  },
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: _isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _hasError
-                    ? const Center(
-                        child: Text(
-                          'Failed to load results. Please try again.',
-                          style: TextStyle(color: Colors.red),
-                        ),
-                      )
-                    : _results.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'No results found.',
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          )
-                        : GridView.builder(
-                            padding: const EdgeInsets.all(16.0),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 10,
-                              mainAxisSpacing: 10,
-                              childAspectRatio: 2.5,
-                            ),
-                            itemCount: _results.length,
-                            itemBuilder: (context, index) {
-                              final restaurant = _results[index];
-                              return SizedBox(
-                                height: 100,
-                                child: RestaurantCard(
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _hasError
+                      ? const Center(
+                          child: Text(
+                            'Failed to load results. Please try again.',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        )
+                      : _results.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'No results found.',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            )
+                          : GridView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 6,
+                                mainAxisSpacing: 6,
+                                childAspectRatio: 0.6,
+                              ),
+                              itemCount: _results.length,
+                              itemBuilder: (context, index) {
+                                final restaurant = _results[index];
+                                return RestaurantCard(
                                   pk: restaurant['id'].toString(),
                                   title: restaurant['name'],
                                   subtitle: restaurant['island'],
                                   category: restaurant['cuisine'] ??
                                       "Unknown Cuisine",
                                   imageUrl: restaurant['image'] ??
-                                      'https://via.placeholder.com/150',
+                                      'assets/default_food_image.png',
                                   rating:
                                       restaurant['rating']?.toDouble() ?? 0.0,
                                   isBookmarked: false,
                                   onBookmark: (isBookmarked) {
                                     debugPrint(
-                                      '${restaurant['name']} has been ${isBookmarked ? 'bookmarked' : 'unbookmarked'}',
-                                    );
+                                        '${restaurant['name']} has been ${isBookmarked ? 'bookmarked' : 'unbookmarked'}');
                                   },
-                                ),
-                              );
-                            },
-                          ),
-          ),
-        ],
+                                );
+                              },
+                            ),
+            ),
+          ],
+        ),
       ),
     );
   }
