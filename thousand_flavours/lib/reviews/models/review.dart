@@ -1,3 +1,4 @@
+// review.dart
 class Review {
   final int id;
   final String user;
@@ -24,8 +25,9 @@ class Review {
         createdAt: DateTime.parse(json['created_at']),
       );
 
-  Map<String, dynamic> toJson() => {
-        'rating': rating,
-        'description': description,
-      };
+Map<String, dynamic> toJson() => {
+  'rating': rating.toString(),  // Convert int to String
+  'description': description,
+};
+
 }
