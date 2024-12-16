@@ -1,3 +1,4 @@
+// review.dart
 class Review {
   final int id;
   final String user;
@@ -25,7 +26,7 @@ class Review {
       );
 
   Map<String, dynamic> toJson() => {
-        'rating': rating,
+        'rating': rating.toString(), // Convert int to String
         'description': description,
       };
 }
