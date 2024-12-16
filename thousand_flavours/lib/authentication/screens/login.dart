@@ -64,38 +64,51 @@ class _LoginPageState extends State<LoginPage> {
             child: Center(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
-                child: Card(
-                  elevation: 10,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20.0),
-                  ),
-                  color: Colors.white.withOpacity(0.9), // Light card background
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Add the image above the white box
+                    Image.asset(
+                      'assets/ATF.png', // Path to your logo image
+                      height: 300, // Adjust the height of the image
+                      fit: BoxFit.contain,
+                    ),
+                    Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Text(
-                          'Login',
+                          'LOGIN',
                           style: TextStyle(
                             fontSize: 28.0,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Italiana',
-                            color: Color(0xFFB87E20),
+                            color: Color(0xFFFDFCE2),
                           ),
                         ),
                         const SizedBox(height: 30.0),
                         TextField(
                           controller: _usernameController,
+                          style: const TextStyle(
+                            fontFamily: 'Italiana',
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0x00000000),
+                          ),
                           decoration: InputDecoration(
                             labelText: 'Username',
                             hintText: 'Enter your username',
                             labelStyle: const TextStyle(
-                              color: Color(0xFFB87E20), // Apply #B87E20 to the label
+                              fontFamily: 'Italiana',
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB1A492),
                             ),
                             hintStyle: const TextStyle(
-                              color: Color(0xFFB87E20), // Apply #B87E20 to the hint text
+                              fontFamily: 'Italiana',
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB1A492),
                             ),
+                            fillColor: Color(0xFFFDFCE2), // White background color
+                            filled: true, // Enable the background color
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16.0),
                               borderSide: const BorderSide(
@@ -124,15 +137,27 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 16.0),
                         TextField(
                           controller: _passwordController,
+                          style: const TextStyle(
+                            fontFamily: 'Italiana',
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0x00000000),
+                          ),
                           decoration: InputDecoration(
                             labelText: 'Password',
                             hintText: 'Enter your password',
                             labelStyle: const TextStyle(
-                              color: Color(0xFFB87E20), // Apply #B87E20 to the label
+                              fontFamily: 'Italiana',
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB1A492),
                             ),
                             hintStyle: const TextStyle(
-                              color: Color(0xFFB87E20), // Apply #B87E20 to the hint text
+                              fontFamily: 'Italiana',
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB1A492),
                             ),
+                            fillColor: Color(0xFFFDFCE2), // White background color
+                            filled: true, // Enable the background color
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(16.0),
                               borderSide: const BorderSide(
@@ -155,6 +180,25 @@ class _LoginPageState extends State<LoginPage> {
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16.0,
                               vertical: 12.0,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24.0),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const RegisterPage()),
+                            );
+                          },
+                          child: const Text(
+                            'Don\'t have an account? Register.',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Italiana',
+                              color: Color(0xFF885F26),
                             ),
                           ),
                         ),
@@ -216,41 +260,22 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           child: const Text(
-                          'Login',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Italiana',
-                            color: Colors.white,
+                            'Sign In',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Italiana',
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                        ),
-                        const SizedBox(height: 24.0),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const RegisterPage()),
-                            );
-                          },
-                          child: const Text(
-                          'Don\'t have an account? Register.',
-                          style: TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Italiana',
-                            color: Color(0xFFB87E20),
-                          ),
-                        ),
                         ),
                       ],
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
-          ),
+          )
         ],
       ),
     );
