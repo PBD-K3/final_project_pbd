@@ -14,17 +14,14 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      create: (_) {
-        CookieRequest request = CookieRequest();
-        return request;
-      },
+    return Provider<CookieRequest>(
+      create: (_) => CookieRequest(),
       child: MaterialApp(
         title: 'A Thousand Flavours',
         theme: ThemeData(
           useMaterial3: true,
         ),
-        home: CoverPage()
+        home: CoverPage(),
       ),
     );
   }
