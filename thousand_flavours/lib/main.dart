@@ -4,9 +4,22 @@ import 'package:provider/provider.dart';
 // import 'package:thousand_flavours/main/screens/login.dart';
 import 'package:thousand_flavours/main/screens/cover.dart';
 // import 'package:thousand_flavours/main/screens/testing.dart';
+import 'package:thousand_flavours/wishlist/providers/wishlist_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider(
+          create: (_) => CookieRequest(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => WishlistProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,15 +27,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Provider<CookieRequest>(
-      create: (_) => CookieRequest(),
-      child: MaterialApp(
-        title: 'A Thousand Flavours',
-        theme: ThemeData(
-          useMaterial3: true,
-        ),
-        home: CoverPage(),
+    return MaterialApp(
+      title: 'A Thousand Flavours',
+      theme: ThemeData(
+        useMaterial3: true,
       ),
+      home: CoverPage(),
     );
   }
 }
