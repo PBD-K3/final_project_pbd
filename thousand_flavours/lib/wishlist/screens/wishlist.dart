@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:thousand_flavours/main/screens/home.dart';
 import 'package:thousand_flavours/main/widgets/restaurant_card.dart';
-import 'dart:convert'; // For JSON decoding
-import 'package:http/http.dart' as http;
-import 'package:thousand_flavours/wishlist/models/restaurant_wishlist.dart';
-import 'package:thousand_flavours/wishlist/services/wishlist_service.dart';
 import '../providers/wishlist_provider.dart';
 
 class WishlistPage extends StatefulWidget {
@@ -61,7 +58,12 @@ class _WishlistPageState extends State<WishlistPage> {
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              HomePage()), // Replace with your BookmarksPage widget
+                    );
                   },
                 ),
               ),
@@ -132,6 +134,7 @@ class _WishlistPageState extends State<WishlistPage> {
                             restaurant.id,
                           );
                         }
+                        context.read<WishlistProvider>().fetchWishlist(_request);
                       },
                     );
                   },

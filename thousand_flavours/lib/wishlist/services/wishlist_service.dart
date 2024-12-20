@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import '../models/restaurant_wishlist.dart';
 
 class WishlistService {
@@ -23,7 +21,6 @@ class WishlistService {
   static Future<bool> addToWishlist(
       BuildContext context, CookieRequest request, String restaurantId) async {
     try {
-      // Fetch CSRF token
       final csrfResponse = await request.get('$baseUrl/csrf/');
       final csrfToken = csrfResponse['csrfToken'];
 
@@ -33,7 +30,7 @@ class WishlistService {
       final response = await request.post(
         '$baseUrl/add-to-wishlist/$restaurantId/',
         {
-          'csrfmiddlewaretoken': csrfToken,//csrfToken ambil dari value login
+          'csrfmiddlewaretoken': csrfToken, 
         },
       );
 
@@ -64,13 +61,11 @@ class WishlistService {
   static Future<bool> removeFromWishlist(
       BuildContext context, CookieRequest request, String restaurantId) async {
     try {
-      // Fetch CSRF token
       final csrfResponse = await request.get('$baseUrl/csrf/');
       final csrfToken = csrfResponse['csrfToken'];
 
       print("CSRF Token: $csrfToken");
 
-      // Remove from wishlist using DELETE method
       final response = await request.post(
         '$baseUrl/remove-from-wishlist/$restaurantId/',
         {

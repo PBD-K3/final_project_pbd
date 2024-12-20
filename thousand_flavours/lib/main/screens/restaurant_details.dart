@@ -8,6 +8,8 @@ import 'package:thousand_flavours/reviews/widgets/review_card.dart';
 import 'package:thousand_flavours/reviews/widgets/review_form.dart';
 import 'package:thousand_flavours/reviews/services/review_service.dart';
 import 'package:thousand_flavours/reviews/models/review.dart';
+import 'package:thousand_flavours/wishlist/providers/wishlist_provider.dart';
+import 'package:thousand_flavours/wishlist/services/wishlist_service.dart';
 
 class RestaurantDetailsPage extends StatefulWidget {
   final String pk;
@@ -68,9 +70,8 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
       ),
     );
 
-    isBookmarked = widget.isBookmarked;
-    final request = context.read<CookieRequest>();
-    _reviewService = ReviewService(request);
+    isBookmarked = widget.isBookmarked || context.read<WishlistProvider>().isInWishlist(widget.pk);
+    _reviewService = ReviewService(context.read<CookieRequest>());
     _fetchReviews();
   }
 
@@ -115,8 +116,36 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     // }
   }
 
+  void _handleWishlistToggle() async {
+    final request = context.read<CookieRequest>();
+    final wishlistProvider = context.read<WishlistProvider>();
+
+    if (wishlistProvider.isInWishlist(widget.pk)) {
+      final success = await WishlistService.removeFromWishlist(context, request, widget.pk);
+      if (success) {
+        wishlistProvider.fetchWishlist(request); // Ensure the provider is updated
+        widget.onBookmark(false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Restaurant removed from wishlist.")),
+        );
+      }
+    } else {
+      final success = await WishlistService.addToWishlist(context, request, widget.pk);
+      if (success) {
+        wishlistProvider.fetchWishlist(request); // Ensure the provider is updated
+        widget.onBookmark(true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Restaurant added to wishlist.")),
+        );
+      }
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
+    final wishlistProvider = context.watch<WishlistProvider>();
+    final isBookmarked = wishlistProvider.isInWishlist(widget.pk);
     final provider = FavoritesProvider.of(context);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 21, 18, 13),
@@ -181,24 +210,13 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                           );
                         },
                       ),
-                      IconButton(
-                        icon: Icon(
+                      GestureDetector(
+                        onTap: _handleWishlistToggle,
+                        child: Icon(
                           isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                          color: isBookmarked ? Colors.blue : Colors.white,
+                          color: isBookmarked ? Color(0xFFb87e21) : Colors.white70,
+                          size: 20,
                         ),
-                        onPressed: () {
-                          setState(() {
-                            isBookmarked = !isBookmarked;
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                '${widget.title} has been ${isBookmarked ? 'added to' : 'removed from'} the wishlist!',
-                              ),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        },
                       ),
                     ],
                   ),

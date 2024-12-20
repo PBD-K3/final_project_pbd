@@ -4,8 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:thousand_flavours/favorites/models/favorites.dart';
 import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
 import 'package:thousand_flavours/main/screens/restaurant_details.dart';
-import 'package:thousand_flavours/wishlist/screens/wishlist.dart';
-import 'package:thousand_flavours/wishlist/services/wishlist_service.dart';
 import 'package:thousand_flavours/wishlist/providers/wishlist_provider.dart';
 
 class RestaurantCard extends StatefulWidget {
@@ -45,6 +43,21 @@ class _RestaurantCardState extends State<RestaurantCard> {
     super.initState();
     isBookmarked = widget.isBookmarked || 
       context.read<WishlistProvider>().isInWishlist(widget.pk);
+    
+    // Initialized restaurant variable
+    restaurant = Restaurants(
+    model: "restaurant_model", 
+    pk: widget.pk,
+    fields: Fields(
+      name: widget.title,
+      island: widget.subtitle,
+      cuisine: widget.category,
+      contacts: '123-456-7890', 
+      gmaps: "gmaps_placeholder",
+      image: widget.imageUrl,
+    ),
+  );
+
   }
 
   void _handleWishlistToggle() async {
@@ -77,26 +90,15 @@ class _RestaurantCardState extends State<RestaurantCard> {
       }
     }
 
-    // Initialized restaurant variable
-    restaurant = Restaurants(
-      model: "restaurant_model", 
-      pk: widget.pk,
-      fields: Fields(
-        name: widget.title,
-        island: widget.subtitle,
-        cuisine: widget.category,
-        contacts: '123-456-7890', 
-        gmaps: "gmaps_placeholder",
-        image: widget.imageUrl,
-      ),
-    );
-
+    
   }
 
   @override 
   Widget build(BuildContext context) {
 
     final provider = FavoritesProvider.of(context);
+    final wishlistProvider = context.read<WishlistProvider>();
+    isBookmarked = wishlistProvider.isInWishlist(widget.pk);
 
     return GestureDetector(
       onTap: () {
@@ -112,8 +114,13 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 rating: widget.rating,
                 island: widget.subtitle,
                 contact: '123-456-7890', // Replace with actual contact data
-                isBookmarked: widget.isBookmarked,//true,
-                onBookmark: (isBookmarked) {}),
+                isBookmarked: widget.isBookmarked,
+                onBookmark: (updatedBookmarkState) {
+                setState(() {
+                  isBookmarked = updatedBookmarkState;
+                });
+              },
+            ),
           ),
         );
       },
@@ -247,10 +254,12 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       ),
                       const SizedBox(width: 10), // Space between icons
                       GestureDetector(
-                        onTap: _handleWishlistToggle,
+                        onTap: () {
+                          _handleWishlistToggle();
+                        },
                         child: Icon(
                           isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                          color: isBookmarked ? Colors.blue : Colors.white70,
+                          color: isBookmarked ? Color(0xFFb87e21) : Colors.white70,
                           size: 20,
                         ),
                       ),
