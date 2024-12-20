@@ -1,5 +1,5 @@
 import 'api_service.dart';
-import 'models/restaurants.dart';
+import 'package:thousand_flavours/main/models/restaurants.dart';
 
 class RestaurantsApi {
   final ApiService _apiService = ApiService();

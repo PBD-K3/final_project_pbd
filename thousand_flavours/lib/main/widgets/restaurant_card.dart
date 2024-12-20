@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:thousand_flavours/favorites/models/favorites.dart';
+import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
 import 'package:thousand_flavours/main/screens/restaurant_details.dart';
 import 'package:thousand_flavours/wishlist/screens/wishlist.dart';
 import 'package:thousand_flavours/wishlist/services/wishlist_service.dart';
@@ -35,6 +37,8 @@ class RestaurantCard extends StatefulWidget {
 class _RestaurantCardState extends State<RestaurantCard> {
   bool isFavorite = false;
   bool isBookmarked = false;
+
+  late Restaurants restaurant; // to be initialized later
 
   @override
   void initState() {
@@ -72,10 +76,28 @@ class _RestaurantCardState extends State<RestaurantCard> {
         widget.onBookmark(true);
       }
     }
+
+    // Initialized restaurant variable
+    restaurant = Restaurants(
+      model: "restaurant_model", 
+      pk: widget.pk,
+      fields: Fields(
+        name: widget.title,
+        island: widget.subtitle,
+        cuisine: widget.category,
+        contacts: '123-456-7890', 
+        gmaps: "gmaps_placeholder",
+        image: widget.imageUrl,
+      ),
+    );
+
   }
 
-  @override
+  @override 
   Widget build(BuildContext context) {
+
+    final provider = FavoritesProvider.of(context);
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -197,11 +219,15 @@ class _RestaurantCardState extends State<RestaurantCard> {
                     children: [
                       GestureDetector(
                         onTap: () {
-                          setState(() {
-                            isFavorite = !isFavorite;
+                          // Toggle the favorite state of the restaurant
+                      provider.toggleFavorites(restaurant);
+
+                      // Update isFavorite based on whether the restaurant is in favorites
+                      setState(() {
+                            isFavorite = provider.isExist(restaurant);
                           });
 
-                          // Show SnackBar with appropriate message
+                          // Show SnackBar with the appropriate message
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
@@ -214,7 +240,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                           );
                         },
                         child: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          provider.isExist(restaurant) ? Icons.favorite : Icons.favorite_border,
                           color: isFavorite ? Colors.red : Colors.white70,
                           size: 20,
                         ),

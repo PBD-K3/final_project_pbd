@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
 // import 'package:thousand_flavours/main/screens/login.dart';
 import 'package:thousand_flavours/main/screens/cover.dart';
 // import 'package:thousand_flavours/main/screens/testing.dart';
@@ -27,12 +28,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'A Thousand Flavours',
-      theme: ThemeData(
-        useMaterial3: true,
+    return MultiProvider(
+      providers: [
+        Provider<CookieRequest>(
+          create: (_) => CookieRequest(),
+        ),
+        ChangeNotifierProvider<FavoritesProvider>(
+          create: (_) => FavoritesProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'A Thousand Flavours',
+        theme: ThemeData(
+          useMaterial3: true,
+        ),
+        home: CoverPage(),
       ),
-      home: CoverPage(),
     );
   }
 }

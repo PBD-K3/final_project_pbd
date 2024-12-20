@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:thousand_flavours/favorites/models/favorites.dart';
+import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
 import 'package:thousand_flavours/main/widgets/bottom_nav.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -41,13 +43,31 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
   bool isFavorite = false;
   bool isBookmarked = false;
 
+  late Restaurants restaurant; // to be initialized later
+
   // List of reviews
   List<Review> _reviews = [];
   late final ReviewService _reviewService;
 
+
   @override
   void initState() {
     super.initState();
+
+    // Initialized restaurant variable
+    restaurant = Restaurants(
+      model: "restaurant_model", 
+      pk: widget.pk,
+      fields: Fields(
+        name: widget.title,
+        island: widget.subtitle,
+        cuisine: widget.category,
+        contacts: '123-456-7890', 
+        gmaps: "gmaps_placeholder",
+        image: widget.imageUrl,
+      ),
+    );
+
     isBookmarked = widget.isBookmarked;
     final request = context.read<CookieRequest>();
     _reviewService = ReviewService(request);
@@ -97,6 +117,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = FavoritesProvider.of(context);
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 21, 18, 13),
       body: SingleChildScrollView(
@@ -140,13 +161,14 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                     children: [
                       IconButton(
                         icon: Icon(
-                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          provider.isExist(restaurant)? Icons.favorite :
+                          Icons.favorite_border,
                           color: isFavorite ? Colors.red : Colors.white,
                         ),
                         onPressed: () {
-                          setState(() {
-                            isFavorite = !isFavorite;
-                          });
+                          
+                          provider.toggleFavorites(restaurant);
+
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text(
