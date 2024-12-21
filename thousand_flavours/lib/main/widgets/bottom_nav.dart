@@ -132,7 +132,7 @@ class BottomNavWidget extends StatelessWidget {
               onTap: () {
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()), // Replace with your ProfilePage widget
+                  MaterialPageRoute(builder: (context) => ProfileScreen()), // Replace with your ProfilePage widget
                 );
               },
             ),

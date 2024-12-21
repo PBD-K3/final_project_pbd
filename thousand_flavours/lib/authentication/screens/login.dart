@@ -18,8 +18,7 @@ class LoginApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(
-          seedColor:
-              const Color(0xFFB87E20), // Hexadecimal color as Color object
+          seedColor: const Color(0xFFB87E20), // Hexadecimal color as Color object
           secondary: const Color(0xFFB87E20),
         ),
       ),
@@ -137,6 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                         const SizedBox(height: 16.0),
                         TextField(
                           controller: _passwordController,
+                          obscureText: true, // Make the password obscure
                           style: const TextStyle(
                             fontFamily: 'Italiana',
                             fontSize: 16.0,
@@ -280,6 +280,4 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
   }
-
-
 }
