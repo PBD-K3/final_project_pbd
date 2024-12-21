@@ -34,7 +34,7 @@ class ServiceFavorites {
     return response['success'] == true;
   }
 
-  // Remove a restaurant from favorites
+  // Remove restaurant from favorites
   Future<bool> removeFavorite(String restaurantId) async {
     final response = await request.post(
       'http://localhost:8000/favorites/api/remove-from-favorites-flutter/$restaurantId/',
