@@ -229,16 +229,19 @@ class _HomePageState extends State<HomePage> {
             child: Row(
               children: snapshot.data!.map((restaurant) {
                 return RestaurantCard(
-                    pk: restaurant.pk,
-                    title: restaurant.fields.name,
-                    subtitle: restaurant.fields.island,
-                    category: restaurant.fields.cuisine,
-                    imageUrl: restaurant.fields.image.isEmpty
-                        ? 'assets/default_food_image.png'
-                        : restaurant.fields.image,
-                    rating: 4.5,
-                    isBookmarked: false,
-                    onBookmark: (isBookmarked) {});
+                  pk: restaurant.pk,
+                  title: restaurant.fields.name,
+                  subtitle: restaurant.fields.island,
+                  category: restaurant.fields.cuisine,
+                  imageUrl: restaurant.fields.image.isEmpty
+                      ? 'assets/default_food_image.png'
+                      : restaurant.fields.image,
+                  rating: 4.5,
+                  isBookmarked: false,
+                  onBookmark: (isBookmarked) {},
+                  isFavorited: false,
+                  onFavorite: (isFavorited) {},
+                );
               }).toList(),
             ),
           );

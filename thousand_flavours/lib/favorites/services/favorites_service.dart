@@ -1,63 +1,100 @@
+import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import '../models/favorites.dart';
+import '../models/restaurant_favorites.dart';
 
 class ServiceFavorites {
-  final CookieRequest request;
+  static const String baseUrl = 'http://localhost:8000/api';
 
-  ServiceFavorites(this.request);
-
-  // Fetch favorite for a user
-  Future<List<Favorites>> fetchFavorites(String userId) async {
-    final response = await request.get(
-      'http://localhost:8000/favorites/api/view-favorites-flutter/$userId/',
-    );
-
-    print("Fetch Favorites Response: $response");
-
-    if (response is List) {
-      return response.map<Favorites>((json) => Favorites.fromJson(json)).toList();
-    } else {
-      print("Error fetching favorites: $response");
+  static Future<List<RestaurantFavorites>> getFavorites(CookieRequest request) async {
+    try {
+      final response = await request.get('$baseUrl/favorites/');
+      if (response is List) {
+        return response.map<RestaurantFavorites>((json) => RestaurantFavorites.fromJson(json)).toList();
+      }
+      return [];
+    } catch (e) {
+      print('Error fetching favorites: $e');
       return [];
     }
   }
 
-  // Add restaurant to favorites
-  Future<bool> addFavorite(String restaurantId) async {
-    final response = await request.post(
-      'http://localhost:8000/favorites/api/add-to-favorites-flutter/$restaurantId/',
-      {},
-    );
+  static Future<bool> addToFavorites(
+      BuildContext context, CookieRequest request, String restaurantId) async {
+    try {
+      final csrfResponse = await request.get('$baseUrl/csrf/');
+      final csrfToken = csrfResponse['csrfToken'];
 
-    print("Add Favorite Response: $response");
+      print("CSRF Token: $csrfToken");
 
-    return response['success'] == true;
+      // Add to favorites
+      final response = await request.post(
+        '$baseUrl/add-to-favorites/$restaurantId/',
+        {
+          'csrfmiddlewaretoken': csrfToken, 
+        },
+      );
+
+      print("Add to Favorites Response: $response");
+
+      if (response['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Added to favorites')),
+        );
+        return true;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text(response['message'] ?? 'Failed to add to favorites')),
+        );
+        return false;
+      }
+    } catch (e) {
+      print("Add to favorites error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+      return false;
+    }
   }
 
-  // Remove restaurant from favorites
-  Future<bool> removeFavorite(String restaurantId) async {
-    final response = await request.post(
-      'http://localhost:8000/favorites/api/remove-from-favorites-flutter/$restaurantId/',
-      {},
-    );
+  static Future<bool> removeFromFavorites(
+      BuildContext context, CookieRequest request, String restaurantId) async {
+    try {
+      final csrfResponse = await request.get('$baseUrl/csrf/');
+      final csrfToken = csrfResponse['csrfToken'];
 
-    print("Remove Favorite Response: $response");
+      print("CSRF Token: $csrfToken");
 
-    return response['success'] == true;
-  }
+      final response = await request.post(
+        '$baseUrl/remove-from-favorites/$restaurantId/',
+        {
+          'csrfmiddlewaretoken': csrfToken,
+        },
+      );
 
-  // Fetch restaurant details (if needed)
-  Future<Restaurants> fetchRestaurantDetails(String pk) async {
-    final response = await request.get(
-      'http://localhost:8000/restaurants/api/get-details/$pk/',
-    );
+      print("Remove from Favorites Response: $response");
 
-    print("Fetch Restaurant Details Response: $response");
-
-    if (response != null) {
-      return Restaurants.fromJson(response);
-    } else {
-      throw Exception("Failed to load restaurant details");
+      if (response['success'] == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(response['message'] ?? 'Removed from favorites')),
+        );
+        return true;
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  response['message'] ?? 'Failed to remove from favorites')),
+        );
+        return false;
+      }
+    } catch (e) {
+      print("Remove from favorites error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+      return false;
     }
   }
 }

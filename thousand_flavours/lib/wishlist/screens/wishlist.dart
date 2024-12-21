@@ -4,6 +4,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:thousand_flavours/main/screens/home.dart';
 import 'package:thousand_flavours/main/widgets/restaurant_card.dart';
 import '../providers/wishlist_provider.dart';
+import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
 
 class WishlistPage extends StatefulWidget {
   const WishlistPage({Key? key}) : super(key: key);
@@ -19,7 +20,20 @@ class _WishlistPageState extends State<WishlistPage> {
   void initState() {
     super.initState();
     _request = context.read<CookieRequest>();
+    _fetchFavorites();
     _fetchWishlist();
+  }
+
+  Future<void> _fetchFavorites() async {
+    try {
+      await context.read<FavoritesProvider>().fetchFavorites(_request);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load favorites: $e')),
+        );
+      }
+    }
   }
 
   Future<void> _fetchWishlist() async {
@@ -118,6 +132,7 @@ class _WishlistPageState extends State<WishlistPage> {
                   itemCount: wishlist.length,
                   itemBuilder: (context, index) {
                     final restaurant = wishlist[index];
+                    
                     return RestaurantCard(
                       pk: restaurant.id,
                       title: restaurant.name,
@@ -125,6 +140,17 @@ class _WishlistPageState extends State<WishlistPage> {
                       category: restaurant.category,
                       imageUrl: restaurant.imageUrl,
                       rating: restaurant.rating,
+                      isFavorited: restaurant.isFavorited =="yes",
+                      onFavorite: (isFavorited) async {
+                        if (!isFavorited) {
+                          await context.read<FavoritesProvider>().removeFromFavorites(
+                            context,
+                            _request,
+                            restaurant.id,
+                          );
+                        }
+                        context.read<WishlistProvider>().fetchWishlist(_request);
+                      },
                       isBookmarked: restaurant.isBookmarked =="yes",
                       onBookmark: (isBookmarked) async {
                         if (!isBookmarked) {

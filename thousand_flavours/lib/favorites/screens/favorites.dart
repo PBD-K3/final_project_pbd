@@ -1,26 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:thousand_flavours/main/screens/home.dart';
 import 'package:thousand_flavours/main/widgets/restaurant_card.dart';
+import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
+import 'package:thousand_flavours/wishlist/providers/wishlist_provider.dart';
 
 class FavoritesPage extends StatefulWidget {
-  const FavoritesPage({super.key});
+  const FavoritesPage({Key? key}) : super(key: key);
 
   @override
   FavoritesPageState createState() => FavoritesPageState();
 }
 
 class FavoritesPageState extends State<FavoritesPage> {
+  
+  late final CookieRequest _request;
+
+  @override
+  void initState() {
+    super.initState();
+    _request = context.read<CookieRequest>();
+    _fetchFavorites();
+    _fetchWishlist();
+  }
+
+  Future<void> _fetchFavorites() async {
+    try {
+      await context.read<FavoritesProvider>().fetchFavorites(_request);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load favorites: $e')),
+        );
+      }
+    }
+  }
+
+
+  Future<void> _fetchWishlist() async {
+    try {
+      await context.read<WishlistProvider>().fetchWishlist(_request);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load wishlist: $e')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = FavoritesProvider.of(context);
-    final favoriteRestaurants = provider.favorites; // List of favorite restaurants
-
     return Scaffold(
       backgroundColor: const Color(0xFF1C1711),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Top Image with Back Button
           Stack(
             children: [
               Image.asset(
@@ -33,17 +69,23 @@ class FavoritesPageState extends State<FavoritesPage> {
                 top: 20,
                 left: 10,
                 child: IconButton(
-                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              HomePage()),
+                    );
                   },
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-
-          // "Favorites" Text
           Center(
             child: Column(
               children: [
@@ -66,79 +108,66 @@ class FavoritesPageState extends State<FavoritesPage> {
             ),
           ),
           const SizedBox(height: 16),
-
-          // Favorites Grid View
           Expanded(
-            child: favoriteRestaurants.isEmpty
-                ? const Center(
+            child: Consumer<FavoritesProvider>(
+              builder: (context, favoritesProvider, child) {
+                if (favoritesProvider.isLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final favorites = favoritesProvider.favorites;
+
+                if (favorites.isEmpty) {
+                  return const Center(
                     child: Text(
-                      'No restaurants in your favorites.',
+                      'No restaurants in favorites.',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                  )
-                : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0), // Adjusted for equal padding
-                    child: GridView.builder(
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2, // 2 cards per row
-                        crossAxisSpacing: 10,
-                        mainAxisSpacing: 5, // Reduced vertical spacing
-                        childAspectRatio: 0.63, // Card size
-                      ),
-                      itemCount: favoriteRestaurants.length,
-                      itemBuilder: (context, index) {
-                        final restaurant = favoriteRestaurants[index];
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            // Restaurant Card Widget
-                            SizedBox(
-                              height: 245, // Shortened height (original 250 - 5 pixels)
-                              child: RestaurantCard(
-                                pk: restaurant.pk,
-                                title: restaurant.fields.name,
-                                subtitle: restaurant.fields.island,
-                                category: restaurant.fields.cuisine,
-                                imageUrl: restaurant.fields.image.isEmpty
-                                    ? 'assets/default_food_image.png'
-                                    : restaurant.fields.image,
-                                rating: 4.5,
-                                isBookmarked: false,
-                                onBookmark: (isBookmarked) {},
-                              ),
-                            ),
-                            const SizedBox(height: 4), // Reduced spacing (original 6)
-                            // Trash Icon
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  favoriteRestaurants.removeAt(index);
-                                });
+                  );
+                }
 
-                                // Show Snackbar
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('The restaurant has been removed from favorites!'),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
-                              },
-                              icon: const Icon(
-                                Icons.delete,
-                                color: Colors.red,
-                                size: 28,
-                              ),
-                              tooltip: 'Remove from favorites',
-                            ),
-                          ],
-                        );
+                return ListView.builder(
+                  itemCount: favorites.length,
+                  itemBuilder: (context, index) {
+                    final restaurant = favorites[index];
+                    return RestaurantCard(
+                      pk: restaurant.id,
+                      title: restaurant.name,
+                      subtitle: restaurant.category,
+                      category: restaurant.category,
+                      imageUrl: restaurant.imageUrl,
+                      rating: restaurant.rating,
+                      isFavorited: restaurant.isFavorited =="yes",
+                      onFavorite: (isFavorited) async {
+                        if (!isFavorited) {
+                          await context.read<FavoritesProvider>().removeFromFavorites(
+                            context,
+                            _request,
+                            restaurant.id,
+                          );
+                        }
+                        context.read<FavoritesProvider>().fetchFavorites(_request);
                       },
-                    ),
-                  ),
+                      isBookmarked: restaurant.isBookmarked =="yes",
+                      onBookmark: (isBookmarked) async {
+                        if (!isBookmarked) {
+                          await context.read<WishlistProvider>().removeFromWishlist(
+                            context,
+                            _request,
+                            restaurant.id,
+                          );
+                        }
+                        context.read<WishlistProvider>().fetchWishlist(_request);
+                      },
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

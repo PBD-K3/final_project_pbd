@@ -1,39 +1,57 @@
 import 'package:flutter/material.dart';
-import 'package:thousand_flavours/favorites/models/favorites.dart';
-import 'package:provider/provider.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import '../models/restaurant_favorites.dart';
+import '../services/favorites_service.dart';
 
 class FavoritesProvider extends ChangeNotifier {
-  // List to store the full Restaurants model
-  final List<Restaurants> _favorites = [];
-  
-  // Getter for the favorites list
-  List<Restaurants> get favorites => _favorites;
+  List<RestaurantFavorites> _favorites = [];
+  bool _isLoading = false;
 
-  // Toggle a restaurant in/out of favorites
-  void toggleFavorites(Restaurants restaurant) {
-    final existingIndex =
-        _favorites.indexWhere((element) => element.pk == restaurant.pk);
+  List<RestaurantFavorites> get favorites => _favorites;
+  bool get isLoading => _isLoading;
 
-    if (existingIndex >= 0) {
-      // Remove restaurant if it already exists
-      _favorites.removeAt(existingIndex);
-    } else {
-      // Add the full restaurant model
-      _favorites.add(restaurant);
+  Future<void> fetchFavorites(CookieRequest request) async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final items = await ServiceFavorites.getFavorites(request);
+      _favorites = items;
+
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      rethrow;
     }
-    notifyListeners();
   }
 
-  // Check if a restaurant exists in favorites based on its pk
-  bool isExist(Restaurants restaurant) {
-    return _favorites.any((element) => element.pk == restaurant.pk);
+  Future<bool> addToFavorites(BuildContext context, CookieRequest request, String restaurantId) async {
+    try {
+      final success = await ServiceFavorites.addToFavorites(context, request, restaurantId);
+      if (success) {
+        await fetchFavorites(request);
+      }
+      return success;
+    } catch (e) {
+      return false;
+    }
   }
 
-  // Static helper to access the provider in the widget tree
-  static FavoritesProvider of(BuildContext context, {bool listen = true}) {
-    return Provider.of<FavoritesProvider>(
-      context,
-      listen: listen,
-    );
+  Future<bool> removeFromFavorites(BuildContext context, CookieRequest request, String restaurantId) async {
+    try {
+      final success = await ServiceFavorites.removeFromFavorites(context, request, restaurantId);
+      if (success) {
+        await fetchFavorites(request);
+      }
+      return success;
+    } catch (e) {
+      return false;
+    }
   }
-}
+
+  bool isInFavorites(String restaurantId) {
+    return _favorites.any((item) => item.id == restaurantId);
+  }
+} 
