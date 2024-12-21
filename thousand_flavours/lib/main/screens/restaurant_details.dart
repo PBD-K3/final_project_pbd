@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:thousand_flavours/favorites/models/favorites.dart';
 import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
+import 'package:thousand_flavours/favorites/services/favorites_service.dart';
 import 'package:thousand_flavours/main/widgets/bottom_nav.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +21,8 @@ class RestaurantDetailsPage extends StatefulWidget {
   final double rating;
   final String island;
   final String contact;
+  final bool isFavorited;
+  final Function(bool) onFavorite;
   final bool isBookmarked;
   final Function(bool) onBookmark;
 
@@ -33,6 +36,8 @@ class RestaurantDetailsPage extends StatefulWidget {
     required this.rating,
     required this.island,
     required this.contact,
+    required this.isFavorited,
+    required this.onFavorite,
     required this.isBookmarked,
     required this.onBookmark,
   });
@@ -42,7 +47,7 @@ class RestaurantDetailsPage extends StatefulWidget {
 }
 
 class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
-  bool isFavorite = false;
+  bool isFavorited = false;
   bool isBookmarked = false;
 
   late Restaurants restaurant; // to be initialized later
@@ -70,9 +75,11 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
       ),
     );
 
+    isFavorited = widget.isFavorited || context.read<FavoritesProvider>().isInFavorites(widget.pk);
     isBookmarked = widget.isBookmarked || context.read<WishlistProvider>().isInWishlist(widget.pk);
     _reviewService = ReviewService(context.read<CookieRequest>());
     _fetchReviews();
+
   }
 
   // Fetch reviews from the server
@@ -116,6 +123,31 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     // }
   }
 
+  void _handleFavoritesToggle() async {
+    final request = context.read<CookieRequest>();
+    final favoritesProvider = context.read<FavoritesProvider>();
+
+    if (favoritesProvider.isInFavorites(widget.pk)) {
+      final success = await ServiceFavorites.removeFromFavorites(context, request, widget.pk);
+      if (success) {
+        favoritesProvider.fetchFavorites(request); // Updates provider
+        widget.onFavorite(false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Restaurant removed from favorites.")),
+        );
+      }
+    } else {
+      final success = await ServiceFavorites.addToFavorites(context, request, widget.pk);
+      if (success) {
+        favoritesProvider.fetchFavorites(request); // Updates provider
+        widget.onFavorite(true);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Restaurant added to favorites.")),
+        );
+      }
+    }
+  }
+
   void _handleWishlistToggle() async {
     final request = context.read<CookieRequest>();
     final wishlistProvider = context.read<WishlistProvider>();
@@ -144,9 +176,13 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+
+    final favoritesProvider = context.watch<FavoritesProvider>();
+    final isFavorited = favoritesProvider.isInFavorites(widget.pk);
+
     final wishlistProvider = context.watch<WishlistProvider>();
     final isBookmarked = wishlistProvider.isInWishlist(widget.pk);
-    final provider = FavoritesProvider.of(context);
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 21, 18, 13),
       body: SingleChildScrollView(
@@ -188,27 +224,13 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                   right: 16,
                   child: Row(
                     children: [
-                      IconButton(
-                        icon: Icon(
-                          provider.isExist(restaurant)? Icons.favorite :
-                          Icons.favorite_border,
-                          color: isFavorite ? Colors.red : Colors.white,
+                      GestureDetector(
+                        onTap: _handleFavoritesToggle,
+                        child: Icon(
+                          isFavorited ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorited ? Colors.red : Colors.white70,
+                          size: 20,
                         ),
-                        onPressed: () {
-                          
-                          provider.toggleFavorites(restaurant);
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                isFavorite
-                                    ? "Restaurant has been added to favorites!"
-                                    : "Restaurant has been removed from favorites!",
-                              ),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        },
                       ),
                       GestureDetector(
                         onTap: _handleWishlistToggle,
