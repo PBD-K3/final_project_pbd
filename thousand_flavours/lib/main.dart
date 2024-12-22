@@ -5,9 +5,22 @@ import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
 // import 'package:thousand_flavours/main/screens/login.dart';
 import 'package:thousand_flavours/main/screens/cover.dart';
 // import 'package:thousand_flavours/main/screens/testing.dart';
+import 'package:thousand_flavours/wishlist/providers/wishlist_provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider(
+          create: (_) => CookieRequest(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => WishlistProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

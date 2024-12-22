@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 import 'package:thousand_flavours/favorites/models/favorites.dart';
 import 'package:thousand_flavours/favorites/provider/favorites_provider.dart';
 import 'package:thousand_flavours/main/screens/restaurant_details.dart';
+import 'package:thousand_flavours/wishlist/providers/wishlist_provider.dart';
 
 class RestaurantCard extends StatefulWidget {
   final String pk;
@@ -10,8 +13,10 @@ class RestaurantCard extends StatefulWidget {
   final String category;
   final String imageUrl;
   final double rating;
-  final bool isBookmarked; 
+  final bool isBookmarked;
   final Function(bool) onBookmark;
+  final bool isFavorited;
+  final Function(bool) onFavorite;
 
   const RestaurantCard({
     super.key,
@@ -23,6 +28,8 @@ class RestaurantCard extends StatefulWidget {
     required this.rating,
     required this.isBookmarked,
     required this.onBookmark,
+    required this.isFavorited,
+    required this.onFavorite,
   });
 
   @override
@@ -30,36 +37,104 @@ class RestaurantCard extends StatefulWidget {
 }
 
 class _RestaurantCardState extends State<RestaurantCard> {
-  bool isFavorite = false;
-  bool isBookmarked = false;
-
-  late Restaurants restaurant; // to be initialized later
+  late bool isFavorited;
+  late bool isBookmarked;
+  late Restaurants restaurant;
 
   @override
   void initState() {
     super.initState();
-    isBookmarked = widget.isBookmarked; // Initialize with the passed value
 
-    // Initialized restaurant variable
+    isBookmarked = widget.isBookmarked ||
+        context.read<WishlistProvider>().isInWishlist(widget.pk);
+
+    isFavorited = widget.isFavorited ||
+        context.read<FavoritesProvider>().isInFavorites(widget.pk);
+
     restaurant = Restaurants(
-      model: "restaurant_model", 
+      model: "restaurant_model",
       pk: widget.pk,
       fields: Fields(
         name: widget.title,
         island: widget.subtitle,
         cuisine: widget.category,
-        contacts: '123-456-7890', 
+        contacts: '123-456-7890',
         gmaps: "gmaps_placeholder",
         image: widget.imageUrl,
       ),
     );
-
   }
 
-  @override 
-  Widget build(BuildContext context) {
+  void _handleWishlistToggle() async {
+    final request = context.read<CookieRequest>();
+    final wishlistProvider = context.read<WishlistProvider>();
 
-    final provider = FavoritesProvider.of(context);
+    if (isBookmarked) {
+      final success = await wishlistProvider.removeFromWishlist(
+        context,
+        request,
+        widget.pk,
+      );
+      if (success) {
+        setState(() {
+          isBookmarked = false;
+        });
+        widget.onBookmark(false);
+      }
+    } else {
+      final success = await wishlistProvider.addToWishlist(
+        context,
+        request,
+        widget.pk,
+      );
+      if (success) {
+        setState(() {
+          isBookmarked = true;
+        });
+        widget.onBookmark(true);
+      }
+    }
+  }
+
+  void _handleFavoritesToggle() async {
+    final request = context.read<CookieRequest>();
+    final favoriteProvider = context.read<FavoritesProvider>();
+
+    if (isFavorited) {
+      final success = await favoriteProvider.removeFromFavorites(
+        context,
+        request,
+        widget.pk,
+      );
+      if (success) {
+        setState(() {
+          isFavorited = false;
+        });
+        widget.onFavorite(false);
+      }
+    } else {
+      final success = await favoriteProvider.addToFavorites(
+        context,
+        request,
+        widget.pk,
+      );
+      if (success) {
+        setState(() {
+          isFavorited = true;
+        });
+        widget.onFavorite(true);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    
+    final favoriteProvider = context.read<FavoritesProvider>();
+    final wishlistProvider = context.read<WishlistProvider>();
+
+    isFavorited = favoriteProvider.isInFavorites(widget.pk);
+    isBookmarked = wishlistProvider.isInWishlist(widget.pk);
 
     return GestureDetector(
       onTap: () {
@@ -74,9 +149,19 @@ class _RestaurantCardState extends State<RestaurantCard> {
               imageUrl: widget.imageUrl,
               rating: widget.rating,
               island: widget.subtitle,
-              contact: '123-456-7890', // Replace with actual contact data
-              isBookmarked: false,
-              onBookmark: (isBookmarked) {}
+              contact: '123-456-7890',
+              isBookmarked: isBookmarked,
+              onBookmark: (updatedBookmarkState) {
+                setState(() {
+                  isBookmarked = updatedBookmarkState;
+                });
+              },
+              isFavorited: isFavorited,
+              onFavorite: (updatedFavoriteState) {
+                setState(() {
+                  isFavorited = updatedFavoriteState;
+                });
+              },
             ),
           ),
         );
@@ -92,9 +177,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Section
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(15)),
               child: Image.network(
                 widget.imageUrl,
                 height: 100,
@@ -125,7 +210,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
               ),
             ),
             const SizedBox(height: 8),
-            // Title Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
@@ -138,7 +222,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
               ),
             ),
             const SizedBox(height: 4),
-            // Rating Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Row(
@@ -153,7 +236,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
               ),
             ),
             const SizedBox(height: 4),
-            // Subtitle Section
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
@@ -164,9 +246,9 @@ class _RestaurantCardState extends State<RestaurantCard> {
                 ),
               ),
             ),
-            // Location Section
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -179,58 +261,25 @@ class _RestaurantCardState extends State<RestaurantCard> {
                   ),
                   Row(
                     children: [
-                  GestureDetector(
-                    onTap: () {
-                      // Toggle the favorite state of the restaurant
-                      provider.toggleFavorites(restaurant);
-
-                      // Update isFavorite based on whether the restaurant is in favorites
-                      setState(() {
-                        isFavorite = provider.isExist(restaurant);
-                      });
-
-                      // Show SnackBar with the appropriate message
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isFavorite
-                                ? "Restaurant has been added to favorites!"
-                                : "Restaurant has been removed from favorites!",
-                          ),
-                          duration: const Duration(seconds: 2),
+                      GestureDetector(
+                        onTap: _handleFavoritesToggle,
+                        child: Icon(
+                          isFavorited ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorited ? Colors.red : Colors.white70,
+                          size: 20,
                         ),
-                      );
-                    },
-                    child: Icon(
-                      provider.isExist(restaurant) ? Icons.favorite : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : Colors.white70,
-                      size: 20,
-                    ),
-                  ),
-                  const SizedBox(width: 10), // Space between icons
-                  GestureDetector(
-                    onTap: () {
-                      widget.onBookmark(!widget.isBookmarked);
-                      
-                      setState(() {
-                        isBookmarked = !isBookmarked;
-                      });
-
-                      widget.onBookmark(isBookmarked);
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            '${widget.title} has been ${isBookmarked ? 'added to' : 'removed from'} the wishlist!',
-                          ),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    child: Icon(
-                      isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                      color: isBookmarked ? Colors.blue : Colors.white70,
-                      size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      GestureDetector(
+                        onTap: _handleWishlistToggle,
+                        child: Icon(
+                          isBookmarked
+                              ? Icons.bookmark
+                              : Icons.bookmark_border,
+                          color: isBookmarked
+                              ? const Color(0xFFb87e21)
+                              : Colors.white70,
+                          size: 20,
                         ),
                       ),
                     ],

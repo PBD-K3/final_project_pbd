@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-class RestaurantWishlist {
+class RestaurantFavorites {
   final String id;
   final String name;
   final String category;
@@ -10,7 +10,7 @@ class RestaurantWishlist {
   final String isBookmarked;
 
 
-  RestaurantWishlist({
+  RestaurantFavorites({
     required this.id,
     required this.name,
     required this.category,
@@ -20,7 +20,7 @@ class RestaurantWishlist {
     required this.isBookmarked
   });
 
-  factory RestaurantWishlist.fromJson(Map<String, dynamic> json) => RestaurantWishlist(
+  factory RestaurantFavorites.fromJson(Map<String, dynamic> json) => RestaurantFavorites(
     id: json['id'].toString(),
     name: json['name'],
     category: json['category'],
@@ -42,8 +42,8 @@ class RestaurantWishlist {
 }
 
 // Helper methods for list operations
-List<RestaurantWishlist> wishlistFromJson(String str) =>
-    List<RestaurantWishlist>.from(json.decode(str).map((x) => RestaurantWishlist.fromJson(x)));
+List<RestaurantFavorites> wishlistFromJson(String str) =>
+    List<RestaurantFavorites>.from(json.decode(str).map((x) => RestaurantFavorites.fromJson(x)));
 
-String wishlistToJson(List<RestaurantWishlist> data) =>
+String wishlistToJson(List<RestaurantFavorites> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));

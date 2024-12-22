@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
-import '../models/restaurant_favorites.dart';
+import '../models/restaurant_wishlist.dart';
 
-class ServiceFavorites {
+class WishlistService {
   static const String baseUrl = 'http://localhost:8000/api';
 
-  static Future<List<RestaurantFavorites>> getFavorites(CookieRequest request) async {
+  static Future<List<RestaurantWishlist>> getWishlist(CookieRequest request) async {
     try {
-      final response = await request.get('$baseUrl/favorites/');
+      final response = await request.get('$baseUrl/wishlist/');
       if (response is List) {
-        return response.map<RestaurantFavorites>((json) => RestaurantFavorites.fromJson(json)).toList();
+        return response.map<RestaurantWishlist>((json) => RestaurantWishlist.fromJson(json)).toList();
       }
       return [];
     } catch (e) {
-      print('Error fetching favorites: $e');
+      print('Error fetching wishlist: $e');
       return [];
     }
   }
 
-  static Future<bool> addToFavorites(
+  static Future<bool> addToWishlist(
       BuildContext context, CookieRequest request, String restaurantId) async {
     try {
       final csrfResponse = await request.get('$baseUrl/csrf/');
@@ -26,31 +26,31 @@ class ServiceFavorites {
 
       print("CSRF Token: $csrfToken");
 
-      // Add to favorites
+      // Add to wishlist
       final response = await request.post(
-        '$baseUrl/add-to-favorites/$restaurantId/',
+        '$baseUrl/add-to-wishlist/$restaurantId/',
         {
           'csrfmiddlewaretoken': csrfToken, 
         },
       );
 
-      print("Add to Favorites Response: $response");
+      print("Add to Wishlist Response: $response");
 
       if (response['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(response['message'] ?? 'Added to favorites')),
+          SnackBar(content: Text(response['message'] ?? 'Added to wishlist')),
         );
         return true;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
-                  Text(response['message'] ?? 'Failed to add to favorites')),
+                  Text(response['message'] ?? 'Failed to add to wishlist')),
         );
         return false;
       }
     } catch (e) {
-      print("Add to favorites error: $e");
+      print("Add to wishlist error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );
@@ -58,7 +58,7 @@ class ServiceFavorites {
     }
   }
 
-  static Future<bool> removeFromFavorites(
+  static Future<bool> removeFromWishlist(
       BuildContext context, CookieRequest request, String restaurantId) async {
     try {
       final csrfResponse = await request.get('$baseUrl/csrf/');
@@ -67,30 +67,30 @@ class ServiceFavorites {
       print("CSRF Token: $csrfToken");
 
       final response = await request.post(
-        '$baseUrl/remove-from-favorites/$restaurantId/',
+        '$baseUrl/remove-from-wishlist/$restaurantId/',
         {
           'csrfmiddlewaretoken': csrfToken,
         },
       );
 
-      print("Remove from Favorites Response: $response");
+      print("Remove from Wishlist Response: $response");
 
       if (response['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(response['message'] ?? 'Removed from favorites')),
+              content: Text(response['message'] ?? 'Removed from wishlist')),
         );
         return true;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  response['message'] ?? 'Failed to remove from favorites')),
+                  response['message'] ?? 'Failed to remove from wishlist')),
         );
         return false;
       }
     } catch (e) {
-      print("Remove from favorites error: $e");
+      print("Remove from wishlist error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: $e')),
       );

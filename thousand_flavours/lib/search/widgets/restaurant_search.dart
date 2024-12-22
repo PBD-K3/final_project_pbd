@@ -146,6 +146,11 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                                       'assets/default_food_image.png',
                                   rating:
                                       restaurant['rating']?.toDouble() ?? 0.0,
+                                  isFavorited: false,
+                                  onFavorite: (isFavorited) {
+                                    debugPrint(
+                                        '${restaurant['name']} has been ${isFavorited ? 'favorited' : 'unfavorited'}');
+                                  },
                                   isBookmarked: false,
                                   onBookmark: (isBookmarked) {
                                     debugPrint(
