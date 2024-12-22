@@ -8,8 +8,11 @@ class HttpService {
     Map<String, String>? queryParams,
   }) async {
     final client = http.Client();
-    // final uri = Uri.https(url).replace(queryParameters: queryParams);
-    final uri = Uri.https(url,"json/");
+    // Ensure the URL uses http instead of https
+    if (url.startsWith('https://')) {
+      url = url.replaceFirst('https://', 'http://');
+    }
+    final uri = Uri.parse(url).replace(queryParameters: queryParams);
 
     try {
       final response = await client.get(uri, headers: headers);

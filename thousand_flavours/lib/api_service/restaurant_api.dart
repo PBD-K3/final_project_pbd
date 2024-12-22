@@ -3,7 +3,7 @@ import 'package:thousand_flavours/main/models/restaurants.dart';
 
 class RestaurantsApi {
   final ApiService _apiService = ApiService();
-  final String _baseUrl = 'andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id';
+  final String _baseUrl = 'http://andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id/json/';
 
   Future<List<Restaurants>> fetchRestaurants() async {
     try {

@@ -33,7 +33,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8000/search_json/?query=$query'),
+        Uri.parse('https://andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id/search_json/?query=$query'),
       );
 
       if (response.statusCode == 200) {

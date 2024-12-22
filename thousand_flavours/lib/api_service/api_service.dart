@@ -20,6 +20,10 @@ class ApiService {
     Map<String, String>? queryParams,
   }) async {
     final headers = await _getHeaders();
+    // Ensure the URL uses http instead of https
+    if (url.startsWith('https://')) {
+      url = url.replaceFirst('https://', 'http://');
+    }
     return _httpService.get(url: url, headers: headers, queryParams: queryParams);
   }
 }

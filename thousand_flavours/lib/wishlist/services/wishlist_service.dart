@@ -3,7 +3,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import '../models/restaurant_wishlist.dart';
 
 class WishlistService {
-  static const String baseUrl = 'http://localhost:8000/api';
+  static const String baseUrl = 'https://andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id/api';
 
   static Future<List<RestaurantWishlist>> getWishlist(CookieRequest request) async {
     try {
