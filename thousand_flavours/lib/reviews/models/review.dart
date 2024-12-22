@@ -16,14 +16,16 @@ class Review {
     required this.createdAt,
   });
 
-  factory Review.fromJson(Map<String, dynamic> json) => Review(
-        id: json['id'],
-        user: json['user'],
-        restaurant: json['restaurant'],
-        rating: json['rating'],
-        description: json['description'],
-        createdAt: DateTime.parse(json['created_at']),
-      );
+factory Review.fromJson(Map<String, dynamic> json) => Review(
+  id: json['id'] ?? 0,
+  user: json['user'] ?? '',
+  restaurant: json['restaurant'] ?? '',
+  rating: json['rating'] ?? 0,
+  description: json['description'] ?? '',
+  createdAt: (json['created_at'] != null)
+      ? DateTime.parse(json['created_at'])
+      : DateTime.now(),
+);
 
   Map<String, dynamic> toJson() => {
         'rating': rating.toString(), // Convert int to String
