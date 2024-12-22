@@ -5,56 +5,73 @@ import '../models/review.dart';
 
 class ReviewService {
   final CookieRequest request;
+  final bool isLocal; // Toggle between environments
 
-  ReviewService(this.request);
+  ReviewService(this.request, {this.isLocal = true});
 
-  // Fetch reviews for a restaurant
+  String get baseUrl {
+    return isLocal
+        ? 'http://localhost:8000'
+        : 'https://andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id';
+  }
+
   Future<List<Review>> fetchReviews(String restaurantId) async {
+    final url = '$baseUrl/reviews/api/get-reviews/$restaurantId/';
+    print("Fetching reviews from: $url");
     try {
-      final response = await request.get(
-        'http://localhost:8000/reviews/api/get-reviews/$restaurantId/',
-      );
-
-      print("Fetch Reviews Response: ${response}");
+      final response = await request.get(url);
+      print("Fetch Reviews Response: $response");
 
       if (response is List) {
         return response.map<Review>((json) => Review.fromJson(json)).toList();
       } else {
-        print("Error fetching reviews: ${response}");
+        print("Error: Unexpected response format for fetchReviews: $response");
         return [];
       }
     } catch (e) {
-      print("Error parsing response: $e");
+      print("Error fetching reviews: $e");
       return [];
     }
   }
 
-  // Submit a review for a restaurant
   Future<bool> submitReview(String restaurantId, Review review) async {
+    print("Attempting to submit a review for restaurant ID: $restaurantId");
     try {
       // Fetch CSRF token
-      final csrfResponse = await request.get(
-        'http://localhost:8000/reviews/api/csrf/',
-      );
-      print("CSRF Response: ${csrfResponse}");
+      final csrfUrl = '$baseUrl/reviews/api/csrf/';
+      print("Fetching CSRF token from: $csrfUrl");
+      final csrfResponse = await request.get(csrfUrl);
+      print("CSRF Response: $csrfResponse");
 
       // Extract CSRF token
       final csrfToken = csrfResponse['csrfToken'];
-      print("CSRF Token: $csrfToken");
+      if (csrfToken == null) {
+        print("Error: CSRF token is null");
+        return false;
+      }
+      print("CSRF Token fetched: $csrfToken");
 
-      // Submit the review with CSRF token included
-      final response = await request.post(
-        'http://localhost:8000/reviews/api/submit-review/$restaurantId/',
-        {
-          'rating': review.rating.toString(),
-          'description': review.description,
-          'csrfmiddlewaretoken': csrfToken,
-        },
-      );
+      // Prepare submission payload
+      final payload = {
+        'rating': review.rating.toString(),
+        'description': review.description,
+        'csrfmiddlewaretoken': csrfToken,
+      };
+      print("Submitting review with payload: $payload");
 
-      print("Submit Review Response: ${response}");
+      // Submit the review
+      final submitUrl = '$baseUrl/reviews/api/submit-review/$restaurantId/';
+      print("Submitting review to: $submitUrl");
+      final response = await request.post(submitUrl, payload);
 
-      return response['id'] != null; // Check if review was successfully created
+      print("Submit Review Response: $response");
+      if (response['id'] != null) {
+        print("Review submission successful with ID: ${response['id']}");
+        return true;
+      } else {
+        print("Review submission failed: $response");
+        return false;
+      }
     } catch (e) {
       print("Error submitting review: $e");
       return false;
