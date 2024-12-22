@@ -26,8 +26,8 @@ class RestaurantFavorites {
     category: json['category'],
     imageUrl: json['image_url'],
     rating: json['rating'].toDouble(),
-    isFavorited: json['is_favorite'],
-    isBookmarked: json['is_bookmark'],
+    isFavorited: json['is_favorite'] ?? false,
+    isBookmarked: json['is_bookmark'] ?? false,
   );
 
   Map<String, dynamic> toJson() => {
