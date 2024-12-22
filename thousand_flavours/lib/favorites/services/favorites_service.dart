@@ -3,7 +3,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import '../models/restaurant_favorites.dart';
 
 class ServiceFavorites {
-  static const String baseUrl = 'http://localhost:8000/api';
+  static const String baseUrl = 'https://andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id/api';
 
   static Future<List<RestaurantFavorites>> getFavorites(CookieRequest request) async {
     try {

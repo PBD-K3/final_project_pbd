@@ -10,9 +10,7 @@ class ReviewService {
   ReviewService(this.request, {this.isLocal = true});
 
   String get baseUrl {
-    return isLocal
-        ? 'http://localhost:8000'
-        : 'https://andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id';
+    return 'https://andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id';
   }
 
   Future<List<Review>> fetchReviews(String restaurantId) async {
