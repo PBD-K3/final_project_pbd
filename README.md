@@ -1,3 +1,5 @@
+Public link: https://install.appcenter.ms/users/adyoprawira/apps/finals/distribution_groups/public
+
 # Final_Project
 
 ## **Names of group members**
