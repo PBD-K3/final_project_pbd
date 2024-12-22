@@ -4,6 +4,9 @@ import 'package:thousand_flavours/profile_page/screens/profile_page.dart';
 import 'package:thousand_flavours/wishlist/screens/wishlist.dart';
 import 'package:thousand_flavours/favorites/screens/favorites.dart';
 import 'package:thousand_flavours/search/widgets/restaurant_search.dart';
+import 'package:thousand_flavours/authentication/screens/login.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class BottomNavWidget extends StatelessWidget {
   const BottomNavWidget({super.key});
@@ -56,6 +59,48 @@ class BottomNavWidget extends StatelessWidget {
               ],
             ),
           ),
+        );
+      },
+    );
+  }
+
+  void _handleLogout(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Logout"),
+          content: const Text("Are you sure you want to logout?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  final request = context.read<CookieRequest>();
+                  const logoutUrl = 'https://andhika-nayaka-athousandflavourmidterm.pbp.cs.ui.ac.id/auth/logout/'; // Replace with your backend logout endpoint
+                  await request.logout(logoutUrl);
+
+                  // Navigate to the login page after successful logout
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginPage()),
+                    (Route<dynamic> route) => false,
+                  );
+                } catch (error) {
+                  // Handle logout failure (optional)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Logout failed: ${error.toString()}")),
+                  );
+                }
+              },
+              child: const Text("Logout"),
+            ),
+          ],
         );
       },
     );
@@ -127,13 +172,10 @@ class BottomNavWidget extends StatelessWidget {
               },
             ),
             _buildNavItem(
-              icon: Icons.person,
+              icon: Icons.logout,
               isSelected: false,
               onTap: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfileScreen()), // Replace with your ProfilePage widget
-                );
+                _handleLogout(context); // Show logout confirmation dialog
               },
             ),
           ],
