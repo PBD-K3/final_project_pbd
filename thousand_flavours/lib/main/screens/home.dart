@@ -8,6 +8,7 @@ import 'package:thousand_flavours/main/widgets/category_card.dart';
 import 'package:thousand_flavours/main/widgets/restaurant_card.dart';
 import 'package:thousand_flavours/main/widgets/restaurant_otm.dart';
 import 'package:thousand_flavours/search/widgets/restaurant_search.dart';
+import 'package:thousand_flavours/api_service/restaurant_api.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
+  final RestaurantsApi _restaurantsApi = RestaurantsApi();
 
   void _navigateToSearchScreen(BuildContext context, String query) {
     if (query.isNotEmpty) {
@@ -46,14 +48,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Future<List<Restaurants>> fetchFirstThreeRestaurants(
-      CookieRequest request) async {
-    final response = await request.get('http://localhost:8000/json/');
-    List<Restaurants> listRestaurants = [];
-    for (var d in response.take(4)) {
-      listRestaurants.add(Restaurants.fromJson(d));
+  Future<List<Restaurants>> fetchRestaurants() async {
+    try {
+      return await _restaurantsApi.fetchRestaurants();
+    } catch (e) {
+      throw Exception('Failed to load restaurants: $e');
     }
-    return listRestaurants;
   }
 
   @override
@@ -72,9 +72,9 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSectionTitle("G A L L E R Y"),
+                  _buildSectionTitle("C L I C K  H E R E  T O  S E E  G A L L E R Y"),
                   const SizedBox(height: 20),
-                  _buildHorizontalRestaurantList(request),
+                  _buildHorizontalRestaurantList(),
                   const SizedBox(height: 60),
 
                   // Restaurant of the Month
@@ -177,40 +177,48 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildSectionTitle(String title) {
-    return Center(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const RestaurantPage()),
-          );
-        },
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 6.0),
-          decoration: BoxDecoration(
-            color: const Color.fromARGB(255, 184, 126, 32), // Highlight color
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Italiana',
+Widget _buildSectionTitle(String title) {
+  return Center(
+    child: GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const RestaurantPage()),
+        );
+      },
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0), // Increase padding for a more button-like look
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 184, 126, 32), // Keep the original color
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              blurRadius: 6,
+              offset: const Offset(0, 3), // Add a subtle shadow for elevation
             ),
+          ],
+        ),
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Italiana',
           ),
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
-  Widget _buildHorizontalRestaurantList(CookieRequest request) {
+
+    Widget _buildHorizontalRestaurantList() {
     return FutureBuilder<List<Restaurants>>(
-      future: fetchFirstThreeRestaurants(request),
+      future: fetchRestaurants(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -227,7 +235,7 @@ class _HomePageState extends State<HomePage> {
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: snapshot.data!.map((restaurant) {
+              children: snapshot.data!.take(4).map((restaurant) {
                 return RestaurantCard(
                   pk: restaurant.pk,
                   title: restaurant.fields.name,

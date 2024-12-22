@@ -129,7 +129,6 @@ class _RestaurantCardState extends State<RestaurantCard> {
 
   @override
   Widget build(BuildContext context) {
-    
     final favoriteProvider = context.read<FavoritesProvider>();
     final wishlistProvider = context.read<WishlistProvider>();
 
@@ -273,9 +272,7 @@ class _RestaurantCardState extends State<RestaurantCard> {
                       GestureDetector(
                         onTap: _handleWishlistToggle,
                         child: Icon(
-                          isBookmarked
-                              ? Icons.bookmark
-                              : Icons.bookmark_border,
+                          isBookmarked ? Icons.bookmark : Icons.bookmark_border,
                           color: isBookmarked
                               ? const Color(0xFFb87e21)
                               : Colors.white70,

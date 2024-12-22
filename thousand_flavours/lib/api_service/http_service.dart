@@ -7,15 +7,25 @@ class HttpService {
     required Map<String, String> headers,
     Map<String, String>? queryParams,
   }) async {
-    final uri = Uri.parse(url).replace(queryParameters: queryParams);
-    final response = await http.get(uri, headers: headers);
+    final client = http.Client();
+    // final uri = Uri.https(url).replace(queryParameters: queryParams);
+    final uri = Uri.https(url,"json/");
 
-    if (response.statusCode >= 200 && response.statusCode < 300) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception(
-        'Failed to fetch data from $url. Status Code: ${response.statusCode}, Body: ${response.body}',
-      );
+    try {
+      final response = await client.get(uri, headers: headers);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        return jsonDecode(response.body);
+      } else {
+        print('Error: ${response.statusCode}');
+        print('Response body: ${response.body}');
+        throw Exception('Failed to fetch data from $url');
+      }
+    } catch (e) {
+      print('Error: $e');
+      rethrow;
+    } finally {
+      client.close(); // Always close the client
     }
   }
 }

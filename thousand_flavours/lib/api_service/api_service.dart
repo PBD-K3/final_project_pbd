@@ -10,7 +10,8 @@ class ApiService {
     return {
       if (token != null) 'Authorization': 'Bearer $token',
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      "Access-Control-Allow-Origin": "*",
+      'Accept': '*/*'
     };
   }
 

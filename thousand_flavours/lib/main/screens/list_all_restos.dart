@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'package:provider/provider.dart';
+import 'package:thousand_flavours/api_service/restaurant_api.dart';
 import 'package:thousand_flavours/main/models/restaurants.dart';
+import 'package:thousand_flavours/main/widgets/restaurant_card.dart';
 import 'package:thousand_flavours/main/widgets/bottom_nav.dart';
-import 'package:thousand_flavours/main/widgets/restaurant_card.dart'; // Assuming the RestaurantCard widget is in this file
 
 class RestaurantPage extends StatefulWidget {
   const RestaurantPage({super.key});
@@ -13,19 +12,10 @@ class RestaurantPage extends StatefulWidget {
 }
 
 class _RestaurantPageState extends State<RestaurantPage> {
-  Future<List<Restaurants>> fetchRestaurants(CookieRequest request) async {
-    final response = await request.get('http://localhost:8000/json/');
-    List<Restaurants> listRestaurants = [];
-    for (var d in response) {
-      listRestaurants.add(Restaurants.fromJson(d));
-    }
-    return listRestaurants;
-  }
+  final RestaurantsApi _restaurantsApi = RestaurantsApi();
 
   @override
   Widget build(BuildContext context) {
-    final request = context.watch<CookieRequest>();
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 21, 18, 13),
       body: SingleChildScrollView(
@@ -69,7 +59,7 @@ class _RestaurantPageState extends State<RestaurantPage> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: FutureBuilder<List<Restaurants>>(
-                future: fetchRestaurants(request),
+                future: _restaurantsApi.fetchRestaurants(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -104,12 +94,10 @@ class _RestaurantPageState extends State<RestaurantPage> {
                               ? 'assets/default_food_image.png'
                               : restaurant.fields.image,
                           rating: 4.5,
-                          isFavorited: false,
-                          onFavorite: (isFavorited) {
-                          },
                           isBookmarked: false,
-                          onBookmark: (isBookmarked) {
-                          }
+                          onBookmark: (isBookmarked) {},
+                          isFavorited: false,
+                          onFavorite: (isFavorited) {},
                         );
                       },
                     );
